@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RipAjnne Shop - หน้าหลัก</title>
+    <title>RipAjnne Shop - Online System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,8 +15,6 @@
         @keyframes popScale { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
         .welcome-bounce { animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-        
-        /* Gacha Card Effect */
         .gacha-card { position: relative; overflow: hidden; border-top: 3px solid #dc2626; }
         .gacha-card::after { content: 'GACHA'; position: absolute; top: 10px; right: -25px; background: #dc2626; font-size: 10px; padding: 2px 30px; transform: rotate(45deg); font-weight: bold; }
     </style>
@@ -29,19 +27,19 @@
         <p id="notiSub" class="text-gray-500 uppercase tracking-[0.3em] text-xs"></p>
     </div>
 
-    <div id="authScreen">
+    <div id="authScreen" class="flex items-center justify-center min-h-screen p-6">
         <div class="glass p-8 rounded-[35px] w-full max-w-[400px] text-center border-t-4 border-red-600 shadow-2xl">
             <h1 class="text-3xl font-black italic text-red-600 mb-6 uppercase">RipAjnne Shop</h1>
             <div id="loginForm" class="space-y-4">
-                <input type="text" id="userLogin" placeholder="ชื่อผู้ใช้งาน" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-red-600 text-white">
+                <input type="email" id="userLogin" placeholder="อีเมลของคุณ" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-red-600 text-white">
                 <input type="password" id="passLogin" placeholder="รหัสผ่าน" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-red-600 text-white">
-                <button onclick="handleLogin()" class="w-full bg-red-600 py-4 rounded-2xl font-bold hover:bg-red-700 transition shadow-lg">เข้าสู่ระบบ</button>
+                <button id="btnLogin" class="w-full bg-red-600 py-4 rounded-2xl font-bold hover:bg-red-700 transition shadow-lg uppercase">เข้าสู่ระบบ</button>
                 <p class="text-xs text-gray-500">ยังไม่มีบัญชี? <button onclick="toggleAuth('reg')" class="text-red-500 underline">สมัครสมาชิก</button></p>
             </div>
             <div id="regForm" class="hidden space-y-4">
-                <input type="text" id="userReg" placeholder="ตั้งชื่อผู้ใช้งาน" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 text-white">
-                <input type="password" id="passReg" placeholder="ตั้งรหัสผ่าน" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 text-white">
-                <button onclick="handleRegister()" class="w-full bg-blue-600 py-4 rounded-2xl font-bold">ยืนยันสมัครสมาชิก</button>
+                <input type="email" id="userReg" placeholder="อีเมลสำหรับสมัคร" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 text-white">
+                <input type="password" id="passReg" placeholder="ตั้งรหัสผ่าน (6 ตัวขึ้นไป)" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 text-white">
+                <button id="btnRegister" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase">ยืนยันสมัครสมาชิก</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 underline mt-4 block mx-auto">กลับไปหน้าล็อกอิน</button>
             </div>
         </div>
@@ -52,10 +50,10 @@
             <div class="container mx-auto flex justify-between items-center">
                 <h1 onclick="showPage('store')" class="text-2xl font-black italic text-red-600 cursor-pointer uppercase">RipAjnne</h1>
                 <div class="flex items-center gap-3">
-                    <button onclick="openModal('topupModal')" class="bg-red-600/10 border border-red-600/20 px-4 py-2 rounded-2xl flex items-center gap-2">
+                    <div class="bg-red-600/10 border border-red-600/20 px-4 py-2 rounded-2xl flex items-center gap-2">
                         <i class="fa-solid fa-wallet text-red-500 text-xs"></i>
                         <span class="text-xs font-bold">฿<span id="displayBalance">0.00</span></span>
-                    </button>
+                    </div>
                     <button onclick="showPage('profile')" class="w-10 h-10 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-red-600 transition"><i class="fa-solid fa-user"></i></button>
                 </div>
             </div>
@@ -64,9 +62,7 @@
         <div id="storePage" class="container mx-auto px-6 py-12">
             <section class="mb-16">
                 <header class="flex items-center gap-4 mb-8">
-                    <div class="h-[2px] flex-1 bg-gradient-to-r from-transparent to-red-600/50"></div>
-                    <h2 class="text-2xl font-black italic uppercase italic"><i class="fa-solid fa-dice-six text-red-600 mr-2"></i>GACHA <span class="text-red-600">SYSTEM</span></h2>
-                    <div class="h-[2px] flex-1 bg-gradient-to-l from-transparent to-red-600/50"></div>
+                    <h2 class="text-2xl font-black italic uppercase"><i class="fa-solid fa-dice-six text-red-600 mr-2"></i>GACHA <span class="text-red-600">SYSTEM</span></h2>
                 </header>
                 <div id="gachaGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     </div>
@@ -75,30 +71,24 @@
             <header class="text-center mb-8">
                 <h2 class="text-3xl font-black italic mb-2 uppercase italic">STORE <span class="text-red-600">CATALOG</span></h2>
             </header>
-            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                </div>
         </div>
 
         <div id="profilePage" class="hidden container mx-auto px-6 py-12">
             <div class="max-w-4xl mx-auto glass p-8 rounded-[40px] mb-10 text-center">
-                <h3 id="profileUser" class="text-2xl font-bold mb-6 italic uppercase">User</h3>
+                <h3 id="profileUser" class="text-lg font-bold mb-6 italic uppercase text-gray-400 italic">User</h3>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-white/5 p-4 rounded-3xl"><p class="text-xs text-gray-400">เงินคงเหลือ</p><p class="text-xl font-bold text-red-500">฿<span id="profileBalance">0.00</span></p></div>
-                    <div class="bg-white/5 p-4 rounded-3xl"><p class="text-xs text-gray-400">ประวัติการซื้อ/สุ่ม</p><p id="orderCount" class="text-xl font-bold">0</p></div>
+                    <div class="bg-white/5 p-4 rounded-3xl"><p class="text-xs text-gray-400">รายการในคลัง</p><p id="orderCount" class="text-xl font-bold">0</p></div>
                 </div>
-                <div class="flex gap-4 justify-center mt-8">
-                    <button onclick="openModal('topupModal')" class="bg-red-600 px-8 py-3 rounded-2xl font-bold text-sm uppercase">เติมเงิน</button>
-                    <button onclick="handleLogout()" class="bg-white/5 px-8 py-3 rounded-2xl font-bold text-sm text-gray-400 uppercase">ออกจากระบบ</button>
-                </div>
+                <button id="btnLogout" class="mt-8 bg-white/5 px-8 py-3 rounded-2xl font-bold text-sm text-gray-400 uppercase">ออกจากระบบ</button>
             </div>
             <div class="glass rounded-[30px] overflow-hidden">
-                <div class="p-5 bg-white/5 font-bold text-red-500 uppercase italic">คลังไอดีส่วนตัว (Inventory)</div>
+                <div class="p-5 bg-white/5 font-bold text-red-500 uppercase italic">คลังส่วนตัว (Inventory)</div>
                 <table class="w-full text-left text-xs">
                     <thead class="bg-white/5 text-gray-500">
-                        <tr>
-                            <th class="p-4">รายการ</th>
-                            <th class="p-4">ID / Username</th>
-                            <th class="p-4">Password</th>
-                        </tr>
+                        <tr><th class="p-4">สินค้า</th><th class="p-4">Username</th><th class="p-4">Password</th></tr>
                     </thead>
                     <tbody id="historyArea"></tbody>
                 </table>
@@ -106,236 +96,94 @@
         </div>
     </div>
 
-    <div id="buyModal" class="modal-overlay">
-        <div class="glass p-8 rounded-[40px] w-full max-sm text-center pop-up border-b-4 border-red-600">
-            <div class="w-16 h-16 bg-red-600/20 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-cart-shopping"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-2 uppercase italic">ยืนยันการซื้อ</h3>
-            <p id="buyInfo" class="text-gray-500 text-sm mb-8"></p>
-            <div class="flex gap-3">
-                <button onclick="closeModal('buyModal')" class="flex-1 bg-white/5 py-4 rounded-2xl font-bold">ยกเลิก</button>
-                <button id="confirmBuyBtn" class="flex-1 bg-red-600 py-4 rounded-2xl font-bold">ยืนยัน</button>
-            </div>
-        </div>
-    </div>
+    <div id="topupModal" class="modal-overlay"><div class="glass p-8 rounded-[35px] w-full max-w-sm text-center pop-up">...</div></div>
 
-    <div id="topupModal" class="modal-overlay">
-        <div class="glass p-8 rounded-[35px] w-full max-w-sm pop-up">
-            <h3 class="text-xl font-bold mb-6 italic"><i class="fa-solid fa-ticket text-red-600 mr-2"></i>เติมเงินด้วยโค้ด</h3>
-            <input type="text" id="topupCode" placeholder="กรอก Gift Code..." class="w-full bg-black border border-white/10 p-4 rounded-2xl outline-none focus:border-red-600 mb-4 text-white">
-            <div class="flex gap-2">
-                <button onclick="closeModal('topupModal')" class="flex-1 bg-white/5 py-3 rounded-xl">ยกเลิก</button>
-                <button onclick="handleCodeTopup()" class="flex-1 bg-red-600 py-3 rounded-xl font-bold">ยืนยัน</button>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-    <script>
-        // --- UI & Auth ---
-        function showNoti(type, title, sub, duration = 2000) {
+        //
+        const firebaseConfig = {
+  apiKey: "AIzaSyAfML9ajHOufn3MDLSBZlXvaKl5YOobTpE",
+  authDomain: "ripajnne-shop.firebaseapp.com",
+  projectId: "ripajnne-shop",
+  storageBucket: "ripajnne-shop.firebasestorage.app",
+  messagingSenderId: "1046234530869",
+  appId: "1:1046234530869:web:2af4b0bcc8f4a73a3e5d7c",
+  measurementId: "G-QRF25429ZE"
+};
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // UI Functions
+        window.showNoti = (type, title, sub) => {
             const overlay = document.getElementById('notiOverlay');
-            const icon = document.getElementById('notiIcon');
-            const titleEl = document.getElementById('notiTitle');
-            const subEl = document.getElementById('notiSub');
+            document.getElementById('notiTitle').innerText = title;
+            document.getElementById('notiSub').innerText = sub;
             overlay.classList.remove('hidden'); overlay.classList.add('flex');
-            if (type === 'success') {
-                icon.className = 'w-24 h-24 bg-green-500 rounded-[30px] flex items-center justify-center text-4xl mb-6 welcome-bounce shadow-2xl';
-                icon.innerHTML = '<i class="fa-solid fa-check text-white"></i>';
-            } else {
-                icon.className = 'w-24 h-24 bg-red-600 rounded-[30px] flex items-center justify-center text-4xl mb-6 welcome-bounce shadow-2xl';
-                icon.innerHTML = '<i class="fa-solid fa-xmark text-white"></i>';
-            }
-            titleEl.innerText = title; subEl.innerText = sub;
-            setTimeout(() => { overlay.classList.add('hidden'); overlay.classList.remove('flex'); }, duration);
-        }
-
-        function checkAccess() {
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('mainContent').classList.remove('hidden');
-                updateUI();
-                renderAll();
-            }
-        }
-
-        function toggleAuth(mode) {
+            setTimeout(() => overlay.classList.add('hidden'), 2000);
+        };
+        window.toggleAuth = (mode) => {
             document.getElementById('loginForm').classList.toggle('hidden', mode === 'reg');
             document.getElementById('regForm').classList.toggle('hidden', mode === 'login');
-        }
-
-        function handleLogin() {
-            const u = document.getElementById('userLogin').value.trim();
-            const p = document.getElementById('passLogin').value.trim();
-            let db = JSON.parse(localStorage.getItem('member_db')) || [];
-            const user = db.find(user => user.username === u && user.password === p);
-            if(user) {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                sessionStorage.setItem('currentUser', u);
-                showNoti('success', 'สำเร็จ', 'ยินดีต้อนรับกลับมาครับ');
-                setTimeout(checkAccess, 1500);
-            } else { showNoti('error', 'ผิดพลาด', 'ชื่อหรือรหัสผ่านไม่ถูกต้อง'); }
-        }
-
-        function handleRegister() {
-            const u = document.getElementById('userReg').value.trim();
-            const p = document.getElementById('passReg').value.trim();
-            if(!u || !p) return showNoti('error', 'ล้มเหลว', 'กรุณากรอกข้อมูลให้ครบ');
-            let db = JSON.parse(localStorage.getItem('member_db')) || [];
-            if(db.some(x => x.username === u)) return showNoti('error', 'ล้มเหลว', 'ชื่อนี้ถูกใช้งานแล้ว');
-            db.push({ username: u, password: p, balance: 0, orders: [] });
-            localStorage.setItem('member_db', JSON.stringify(db));
-            showNoti('success', 'สำเร็จ', 'สมัครสมาชิกเรียบร้อย');
-            setTimeout(() => toggleAuth('login'), 2000);
-        }
-
-        function handleLogout() { sessionStorage.clear(); location.reload(); }
-
-        // --- Core Rendering ---
-        function renderAll() {
-            renderProducts();
-            renderGacha();
-        }
-
-        function renderProducts() {
-            const db = JSON.parse(localStorage.getItem('ripajnne_db')) || [];
-            document.getElementById('productGrid').innerHTML = db.map((p, idx) => `
-                <div class="glass p-3 rounded-3xl group border border-transparent hover:border-red-600/30 transition-all duration-300">
-                    <img src="${p.img}" class="w-full h-40 object-cover rounded-2xl mb-4 grayscale group-hover:grayscale-0 transition-all">
-                    <h4 class="font-bold text-sm mb-1">${p.name}</h4>
-                    <p class="text-red-500 font-bold mb-4 italic uppercase">฿${p.price.toLocaleString()}</p>
-                    <button onclick='confirmPurchase(${idx})' class="w-full bg-white text-black py-3 rounded-xl font-bold hover:bg-red-600 hover:text-white transition uppercase text-xs">ซื้อทันที</button>
-                </div>
-            `).join('');
-        }
-
-        function renderGacha() {
-            const gachaDB = JSON.parse(localStorage.getItem('gacha_db')) || [];
-            document.getElementById('gachaGrid').innerHTML = gachaDB.map((g, idx) => `
-                <div class="glass gacha-card p-3 rounded-3xl border border-white/5 hover:border-red-600/50 transition-all">
-                    <img src="${g.img}" class="w-full h-40 object-cover rounded-2xl mb-4">
-                    <h4 class="font-bold text-sm mb-1 text-red-600">${g.name}</h4>
-                    <p class="text-gray-400 text-[10px] mb-2">ของในกล่องคงเหลือ: ${g.items.length} รายการ</p>
-                    <div class="flex justify-between items-center mb-4">
-                        <span class="font-black text-lg italic">฿${g.price.toLocaleString()}</span>
-                    </div>
-                    <button onclick="playGacha(${idx})" class="w-full bg-red-600 py-3 rounded-xl font-black text-xs uppercase shadow-lg shadow-red-600/20 active:scale-95 transition">สุ่มรางวัล</button>
-                </div>
-            `).join('');
-        }
-
-        // --- Gacha Logic ---
-        function playGacha(idx) {
-            let gachaDB = JSON.parse(localStorage.getItem('gacha_db')) || [];
-            let g = gachaDB[idx];
-            let users = JSON.parse(localStorage.getItem('member_db'));
-            let cur = sessionStorage.getItem('currentUser');
-            let uIdx = users.findIndex(u => u.username === cur);
-
-            if (g.items.length === 0) return showNoti('error', 'ของหมด', 'กล่องสุ่มนี้ไม่มีของรางวัลเหลือแล้ว');
-            if (users[uIdx].balance < g.price) return showNoti('error', 'เงินไม่พอ', 'กรุณาเติมเงินก่อนสุ่ม');
-
-            // หักเงิน
-            users[uIdx].balance -= g.price;
-
-            // สุ่มของจาก Array items
-            const itemIdx = Math.floor(Math.random() * g.items.length);
-            const prize = g.items[itemIdx];
-
-            // ย้ายของไปเข้าประวัติการซื้อผู้ใช้
-            users[uIdx].orders.push({
-                name: `สุ่มได้จาก: ${g.name}`,
-                id_user: prize.user,
-                id_pass: prize.pass,
-                date: new Date().toLocaleString()
-            });
-
-            // ลบของออกจากกล่องสุ่ม
-            g.items.splice(itemIdx, 1);
-
-            // เซฟข้อมูล
-            localStorage.setItem('member_db', JSON.stringify(users));
-            localStorage.setItem('gacha_db', JSON.stringify(gachaDB));
-
-            showNoti('success', 'สุ่มสำเร็จ!', `ได้รับไอดีจากกล่อง ${g.name}`);
-            updateUI();
-            renderGacha();
-        }
-
-        // --- Shop Logic ---
-        function confirmPurchase(idx) {
-            const db = JSON.parse(localStorage.getItem('ripajnne_db')) || [];
-            const p = db[idx];
-            document.getElementById('buyInfo').innerText = `${p.name} ราคา ฿${p.price.toLocaleString()}`;
-            document.getElementById('confirmBuyBtn').onclick = () => {
-                let users = JSON.parse(localStorage.getItem('member_db'));
-                let cur = sessionStorage.getItem('currentUser');
-                let uIdx = users.findIndex(u => u.username === cur);
-                
-                if(users[uIdx].balance < p.price) {
-                    closeModal('buyModal');
-                    return showNoti('error', 'เงินไม่พอ', 'กรุณาเติมเงินก่อนซื้อ');
-                }
-
-                users[uIdx].balance -= p.price;
-                users[uIdx].orders.push({...p, date: new Date().toLocaleString()});
-                db.splice(idx, 1);
-                
-                localStorage.setItem('ripajnne_db', JSON.stringify(db));
-                localStorage.setItem('member_db', JSON.stringify(users));
-                
-                closeModal('buyModal');
-                showNoti('success', 'ซื้อสำเร็จ', 'ขอบคุณที่อุดหนุนครับ');
-                updateUI();
-                renderProducts();
-            };
-            openModal('buyModal');
-        }
-
-        function handleCodeTopup() {
-            const input = document.getElementById('topupCode').value.trim();
-            let codes = JSON.parse(localStorage.getItem('shop_codes')) || [];
-            let cIdx = codes.findIndex(c => c.code === input);
-            if(cIdx !== -1) {
-                let gift = codes[cIdx];
-                let users = JSON.parse(localStorage.getItem('member_db'));
-                let uIdx = users.findIndex(u => u.username === sessionStorage.getItem('currentUser'));
-                users[uIdx].balance += gift.amount;
-                codes.splice(cIdx, 1);
-                localStorage.setItem('member_db', JSON.stringify(users));
-                localStorage.setItem('shop_codes', JSON.stringify(codes));
-                closeModal('topupModal');
-                showNoti('success', 'สำเร็จ', `เติมเงินเข้า ฿${gift.amount}`);
-                updateUI();
-            } else { showNoti('error', 'ผิดพลาด', 'โค้ดไม่ถูกต้อง'); }
-        }
-
-        function updateUI() {
-            let users = JSON.parse(localStorage.getItem('member_db')) || [];
-            let data = users.find(u => u.username === sessionStorage.getItem('currentUser'));
-            if(!data) return;
-            document.getElementById('displayBalance').innerText = data.balance.toLocaleString();
-            document.getElementById('profileBalance').innerText = data.balance.toLocaleString();
-            document.getElementById('profileUser').innerText = data.username;
-            document.getElementById('orderCount').innerText = data.orders.length;
-            document.getElementById('historyArea').innerHTML = data.orders.map(o => `
-                <tr class="border-b border-white/5 hover:bg-white/5 transition">
-                    <td class="p-4 text-gray-300 font-bold">${o.name}</td>
-                    <td class="p-4 font-mono text-green-500 uppercase">${o.id_user}</td>
-                    <td class="p-4 font-mono text-red-500 uppercase">${o.id_pass}</td>
-                </tr>
-            `).join('');
-        }
-
-        function showPage(page) {
+        };
+        window.showPage = (page) => {
             document.getElementById('storePage').classList.toggle('hidden', page !== 'store');
             document.getElementById('profilePage').classList.toggle('hidden', page !== 'profile');
-            if(page === 'store') renderAll();
-        }
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        
-        window.onload = checkAccess;
+        };
+
+        // Auth Logic
+        document.getElementById('btnRegister').onclick = async () => {
+            const email = document.getElementById('userReg').value;
+            const pass = document.getElementById('passReg').value;
+            try {
+                const res = await createUserWithEmailAndPassword(auth, email, pass);
+                await setDoc(doc(db, "users", res.user.uid), { email, balance: 0, orders: [] });
+                showNoti('success', 'สำเร็จ', 'สร้างบัญชีออนไลน์เรียบร้อย');
+                toggleAuth('login');
+            } catch (e) { showNoti('error', 'ล้มเหลว', 'ตรวจสอบข้อมูลอีกครั้ง'); }
+        };
+
+        document.getElementById('btnLogin').onclick = async () => {
+            const email = document.getElementById('userLogin').value;
+            const pass = document.getElementById('passLogin').value;
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                showNoti('success', 'สำเร็จ', 'ยินดีต้อนรับเข้าสู่ระบบ');
+            } catch (e) { showNoti('error', 'ล้มเหลว', 'อีเมลหรือรหัสผ่านผิด'); }
+        };
+
+        document.getElementById('btnLogout').onclick = () => signOut(auth);
+
+        // Database Sync
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('authScreen').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+                onSnapshot(doc(db, "users", user.uid), (snap) => {
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        document.getElementById('displayBalance').innerText = data.balance.toLocaleString();
+                        document.getElementById('profileBalance').innerText = data.balance.toLocaleString();
+                        document.getElementById('profileUser').innerText = data.email;
+                        document.getElementById('orderCount').innerText = data.orders.length;
+                        document.getElementById('historyArea').innerHTML = data.orders.map(o => `
+                            <tr class="border-b border-white/5">
+                                <td class="p-4 text-gray-300 font-bold">${o.name}</td>
+                                <td class="p-4 font-mono text-green-500">${o.id_user || 'N/A'}</td>
+                                <td class="p-4 font-mono text-red-500">${o.id_pass || 'N/A'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                });
+            } else {
+                document.getElementById('authScreen').classList.remove('hidden');
+                document.getElementById('mainContent').classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>
