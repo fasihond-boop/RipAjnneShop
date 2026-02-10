@@ -17,10 +17,10 @@
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold mb-8 text-red-500 italic uppercase">ADMIN CONTROL PANEL</h1>
 
-        <div class="admin-card mb-8">
-            <h2 class="text-xl mb-4 text-blue-400">💰 จัดการเงินลูกค้า (Topup)</h2>
+        <div class="admin-card mb-8 shadow-xl">
+            <h2 class="text-xl mb-4 text-blue-400 font-bold">💰 จัดการเงินลูกค้า (Topup)</h2>
             <div class="flex gap-2">
-                <input type="email" id="targetEmail" placeholder="ใส่อีเมลลูกค้าที่ต้องการเติมเงิน">
+                <input type="email" id="targetEmail" placeholder="ใส่อีเมลลูกค้า">
                 <input type="number" id="amount" placeholder="จำนวนเงิน" class="w-32">
             </div>
             <button onclick="updateBalance()" class="bg-blue-600 px-6 py-2 rounded-lg font-bold w-full hover:bg-blue-700 transition">อัปเดตยอดเงิน</button>
@@ -28,40 +28,41 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div class="admin-card">
-                <h2 class="text-xl mb-4 text-green-400">📦 เพิ่มสินค้าใหม่ (Store)</h2>
+                <h2 class="text-xl mb-4 text-green-400 font-bold">📦 เพิ่มสินค้าใหม่ (Store)</h2>
                 <input type="text" id="pName" placeholder="ชื่อสินค้า">
                 <input type="number" id="pPrice" placeholder="ราคา">
                 <input type="text" id="pImg" placeholder="ลิงก์รูปภาพ (URL)">
-                <input type="text" id="pUser" placeholder="Username (ที่จะให้ลูกค้า)">
-                <input type="text" id="pPass" placeholder="Password (ที่จะให้ลูกค้า)">
+                <input type="text" id="pUser" placeholder="Username">
+                <input type="text" id="pPass" placeholder="Password">
                 <button onclick="addProduct()" class="bg-green-600 px-6 py-2 rounded-lg font-bold w-full hover:bg-green-700 transition">ยืนยันเพิ่มสินค้า</button>
             </div>
 
-            <div class="admin-card">
-                <h2 class="text-xl mb-4 text-red-400">🎰 เพิ่มกล่องสุ่ม (Gacha)</h2>
-                <input type="text" id="gName" placeholder="ชื่อตู้สุ่ม">
+            <div class="admin-card border-t-2 border-red-500">
+                <h2 class="text-xl mb-4 text-red-400 font-bold">🎰 ระบบตู้สุ่ม (Add/Stock)</h2>
+                <p class="text-[10px] text-gray-400 mb-2">*ถ้าชื่อตู้ซ้ำ ระบบจะเติมของเข้าตู้เดิมให้ทันที</p>
+                <input type="text" id="gName" placeholder="ชื่อตู้สุ่ม (เช่น กล่องสุ่มไก่ตัน)">
                 <input type="number" id="gPrice" placeholder="ราคาต่อการสุ่ม">
-                <input type="text" id="gImg" placeholder="ลิงก์รูปภาพตู้ (URL)">
-                <textarea id="gPool" placeholder="ของที่จะสุ่มได้ (รูปแบบ User:Pass , คั่นด้วยลูกน้ำ) เช่น id1:pass1, id2:pass2"></textarea>
-                <button onclick="addGacha()" class="bg-red-600 px-6 py-2 rounded-lg font-bold w-full hover:bg-red-700 transition">ยืนยันเพิ่มตู้สุ่ม</button>
+                <input type="text" id="gImg" placeholder="ลิงก์รูปภาพตู้">
+                <textarea id="gPool" placeholder="ใส่ไอดี:พาส คั่นด้วยลูกน้ำ เช่น id1:pass1, id2:pass2"></textarea>
+                <button onclick="addGacha()" class="bg-red-600 px-6 py-2 rounded-lg font-bold w-full hover:bg-red-700 transition uppercase">บันทึกข้อมูลตู้สุ่ม</button>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="admin-card">
-                <h2 class="text-xl mb-4 text-gray-300">📝 รายการสินค้า</h2>
-                <div id="adminProductList" class="space-y-2"></div>
+                <h2 class="text-xl mb-4 text-gray-300">📝 สินค้าหน้าร้าน</h2>
+                <div id="adminProductList" class="space-y-2 text-sm"></div>
             </div>
             <div class="admin-card">
-                <h2 class="text-xl mb-4 text-gray-300">📝 รายการตู้สุ่ม</h2>
-                <div id="adminGachaList" class="space-y-2"></div>
+                <h2 class="text-xl mb-4 text-gray-300">📝 สถานะตู้สุ่ม (สต็อก)</h2>
+                <div id="adminGachaList" class="space-y-2 text-sm"></div>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, updateDoc, addDoc, collection, onSnapshot, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, updateDoc, addDoc, collection, onSnapshot, query, where, getDocs, deleteDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfML9ajHOufn3MDLSBZlXvaKl5YOobTpE",
@@ -83,11 +84,11 @@
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
                 await updateDoc(doc(db, "users", querySnapshot.docs[0].id), { balance: cash });
-                alert("อัปเดตยอดเงินให้ " + email + " สำเร็จ!");
-            } else { alert("ไม่พบอีเมลลูกค้ารายนี้"); }
+                alert("เติมเงินเรียบร้อย!");
+            } else { alert("ไม่พบผู้ใช้งาน!"); }
         };
 
-        // --- ระบบสินค้า Store ---
+        // --- เพิ่มสินค้า Store ---
         window.addProduct = async () => {
             await addDoc(collection(db, "products"), {
                 name: document.getElementById('pName').value,
@@ -96,53 +97,76 @@
                 id_user: document.getElementById('pUser').value,
                 id_pass: document.getElementById('pPass').value
             });
-            alert("เพิ่มสินค้าสำเร็จ!");
+            alert("เพิ่มสินค้าลงร้านค้าแล้ว!");
             location.reload();
         };
 
-        // --- ระบบ Gacha ---
+        // --- ระบบ Gacha (แก้ไขให้รองรับการเติมของ) ---
         window.addGacha = async () => {
-            const rawPool = document.getElementById('gPool').value; // id1:pass1, id2:pass2
-            const itemsArray = rawPool.split(',').map(item => {
+            const name = document.getElementById('gName').value;
+            const price = Number(document.getElementById('gPrice').value);
+            const img = document.getElementById('gImg').value;
+            const rawPool = document.getElementById('gPool').value;
+
+            // แปลงข้อความเป็น Array ของ Object
+            const newItems = rawPool.split(',').filter(item => item.includes(':')).map(item => {
                 const [u, p] = item.trim().split(':');
-                return { id_user: u || 'N/A', id_pass: p || 'N/A' };
+                return { id_user: u, id_pass: p };
             });
 
-            await addDoc(collection(db, "gacha"), {
-                name: document.getElementById('gName').value,
-                price: Number(document.getElementById('gPrice').value),
-                img: document.getElementById('gImg').value,
-                items: itemsArray // เก็บเป็น Array ของ User/Pass
-            });
-            alert("เพิ่มตู้สุ่มสำเร็จ!");
+            if(newItems.length === 0) return alert("รูปแบบไอดีพาสไม่ถูกต้อง!");
+
+            // เช็คว่ามีตู้ชื่อนี้อยู่แล้วหรือไม่
+            const q = query(collection(db, "gacha"), where("name", "==", name));
+            const querySnapshot = await getDocs(q);
+
+            if (!querySnapshot.empty) {
+                // ถ้ามีตู้เดิม ให้ "เติมของ" เข้าไปในอาเรย์เดิม
+                const gachaDoc = querySnapshot.docs[0];
+                const existingItems = gachaDoc.data().items || [];
+                await updateDoc(doc(db, "gacha", gachaDoc.id), {
+                    items: [...existingItems, ...newItems],
+                    price: price, // อัปเดตราคาล่าสุด
+                    img: img // อัปเดตราคาล่าสุด
+                });
+                alert(`เติมของเข้าตู้ "${name}" เพิ่มอีก ${newItems.length} ชิ้นแล้ว!`);
+            } else {
+                // ถ้าไม่มี ให้สร้างตู้ใหม่
+                await addDoc(collection(db, "gacha"), {
+                    name, price, img, items: newItems
+                });
+                alert("สร้างตู้สุ่มใหม่สำเร็จ!");
+            }
             location.reload();
         };
 
-        // --- โหลดรายการเพื่อจัดการ (ลบ) ---
+        // --- แสดงรายการ ---
         onSnapshot(collection(db, "products"), (snap) => {
-            let html = '';
-            snap.forEach(docSnap => {
-                html += `<div class="flex justify-between items-center bg-black/30 p-3 rounded-lg border border-white/5">
-                    <span class="text-sm">${docSnap.data().name} (${docSnap.data().price}฿)</span>
-                    <button onclick="deleteDocItem('products','${docSnap.id}')" class="text-red-500 font-bold">ลบ</button>
-                </div>`;
-            });
-            document.getElementById('adminProductList').innerHTML = html;
+            document.getElementById('adminProductList').innerHTML = snap.docs.map(docSnap => `
+                <div class="flex justify-between items-center bg-black/30 p-3 rounded-lg border border-white/5">
+                    <span>${docSnap.data().name}</span>
+                    <button onclick="deleteDocItem('products','${docSnap.id}')" class="text-red-500">ลบ</button>
+                </div>
+            `).join('');
         });
 
         onSnapshot(collection(db, "gacha"), (snap) => {
-            let html = '';
-            snap.forEach(docSnap => {
-                html += `<div class="flex justify-between items-center bg-black/30 p-3 rounded-lg border border-white/5">
-                    <span class="text-sm text-red-400">${docSnap.data().name} (${docSnap.data().price}฿)</span>
-                    <button onclick="deleteDocItem('gacha','${docSnap.id}')" class="text-red-500 font-bold">ลบ</button>
-                </div>`;
-            });
-            document.getElementById('adminGachaList').innerHTML = html;
+            document.getElementById('adminGachaList').innerHTML = snap.docs.map(docSnap => {
+                const data = docSnap.data();
+                const stock = data.items ? data.items.length : 0;
+                return `
+                <div class="flex justify-between items-center bg-black/30 p-3 rounded-lg border border-white/5">
+                    <div>
+                        <p class="text-red-400 font-bold">${data.name}</p>
+                        <p class="text-[10px] text-gray-400">คงเหลือ: ${stock} ชิ้น</p>
+                    </div>
+                    <button onclick="deleteDocItem('gacha','${docSnap.id}')" class="text-red-500">ลบตู้</button>
+                </div>
+            `}).join('');
         });
 
         window.deleteDocItem = async (coll, id) => {
-            if(confirm('ยืนยันจะลบรายการนี้?')) await deleteDoc(doc(db, coll, id));
+            if(confirm('ยืนยันจะลบ?')) await deleteDoc(doc(db, coll, id));
         };
     </script>
 </body>
