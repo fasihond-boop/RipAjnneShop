@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RipAjnne - Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #0f172a; color: white; }
+        .admin-card { background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; }
+        input { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 10px; border-radius: 10px; outline: none; width: 100%; margin-bottom: 10px; color: white; }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8 text-red-500">ADMIN CONTROL PANEL</h1>
+
+        <div class="admin-card mb-8">
+            <h2 class="text-xl mb-4 text-blue-400">💰 จัดการเงินลูกค้า (Topup)</h2>
+            <div class="flex gap-2">
+                <input type="email" id="targetEmail" placeholder="ใส่อีเมลลูกค้าที่ต้องการเติมเงิน">
+                <input type="number" id="amount" placeholder="จำนวนเงิน" class="w-32">
+            </div>
+            <button onclick="updateBalance()" class="bg-blue-600 px-6 py-2 rounded-lg font-bold w-full hover:bg-blue-700">อัปเดตยอดเงิน</button>
+        </div>
+
+        <div class="admin-card mb-8">
+            <h2 class="text-xl mb-4 text-green-400">📦 เพิ่มสินค้าใหม่ (Store)</h2>
+            <input type="text" id="pName" placeholder="ชื่อสินค้า">
+            <input type="number" id="pPrice" placeholder="ราคา">
+            <input type="text" id="pImg" placeholder="ลิงก์รูปภาพ (URL)">
+            <input type="text" id="pUser" placeholder="Username (ที่จะให้ลูกค้า)">
+            <input type="text" id="pPass" placeholder="Password (ที่จะให้ลูกค้า)">
+            <button onclick="addProduct()" class="bg-green-600 px-6 py-2 rounded-lg font-bold w-full hover:bg-green-700">ยืนยันเพิ่มสินค้า</button>
+        </div>
+
+        <div class="admin-card">
+            <h2 class="text-xl mb-4">📝 รายการสินค้าในระบบ</h2>
+            <div id="adminProductList" class="space-y-2">
+                </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, updateDoc, setDoc, addDoc, collection, onSnapshot, query, where, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 🛑 วาง Firebase Config ของคุณตรงนี้ 🛑
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfML9ajHOufn3MDLSBZlXvaKl5YOobTpE",
+            authDomain: "ripajnne-shop.firebaseapp.com",
+            projectId: "ripajnne-shop",
+            storageBucket: "ripajnne-shop.firebasestorage.app",
+            messagingSenderId: "1046234530869",
+            appId: "1:1046234530869:web:2af4b0bcc8f4a73a3e5d7c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // ฟังก์ชันเติมเงิน
+        window.updateBalance = async () => {
+            const email = document.getElementById('targetEmail').value;
+            const cash = Number(document.getElementById('amount').value);
+            
+            // ค้นหา User จาก Email
+            const q = query(collection(db, "users"), where("email", "==", email));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                const userDoc = querySnapshot.docs[0];
+                await updateDoc(doc(db, "users", userDoc.id), { balance: cash });
+                alert("อัปเดตยอดเงินให้ " + email + " เป็น " + cash + " เรียบร้อย!");
+            } else {
+                alert("ไม่พบอีเมลลูกค้ารายนี้ในระบบ");
+            }
+        };
+
+        // ฟังก์ชันเพิ่มสินค้า
+        window.addProduct = async () => {
+            const data = {
+                name: document.getElementById('pName').value,
+                price: Number(document.getElementById('pPrice').value),
+                img: document.getElementById('pImg').value,
+                id_user: document.getElementById('pUser').value,
+                id_pass: document.getElementById('pPass').value
+            };
+            await addDoc(collection(db, "products"), data);
+            alert("เพิ่มสินค้าสำเร็จ!");
+            location.reload();
+        };
+
+        // โหลดรายการสินค้ามาโชว์เพื่อกดลบ
+        onSnapshot(collection(db, "products"), (snap) => {
+            let html = '';
+            snap.forEach(docSnap => {
+                const p = docSnap.data();
+                html += `
+                    <div class="flex justify-between items-center bg-black/30 p-3 rounded-lg border border-white/5">
+                        <span>${p.name} - ${p.price}฿</span>
+                        <button onclick="deleteProduct('${docSnap.id}')" class="text-red-500 font-bold">ลบ</button>
+                    </div>
+                `;
+            });
+            document.getElementById('adminProductList').innerHTML = html;
+        });
+
+        window.deleteProduct = async (id) => {
+            if(confirm('ยืนยันจะลบสินค้าชิ้นนี้?')) {
+                await deleteDoc(doc(db, "products", id));
+            }
+        };
+    </script>
+</body>
+</html>
