@@ -10,11 +10,11 @@
     <style>
         body { font-family: 'Kanit', sans-serif; background-color: #08080a; color: white; }
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; width: 100%; outline: none; transition: 0.3s; }
+        .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; width: 100%; outline: none; transition: 0.3s; color: white; }
         .input-style:focus { border-color: #dc2626; background: rgba(220, 38, 38, 0.05); }
         .btn-red { background: #dc2626; transition: 0.3s; cursor: pointer; }
         .btn-red:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3); }
-        .tab-btn { padding: 10px 20px; border-radius: 12px; transition: 0.3s; cursor: pointer; }
+        .tab-btn { padding: 10px 20px; border-radius: 12px; transition: 0.3s; cursor: pointer; color: #666; }
         .tab-btn.active { background: #dc2626; color: white; }
     </style>
 </head>
@@ -22,88 +22,86 @@
 
     <nav class="p-6 border-b border-white/5 mb-10 bg-[#08080a]/80 backdrop-blur-md sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black italic text-red-600 uppercase tracking-tighter">Admin Panel</h1>
-            <a href="index.html" class="text-xs bg-white/5 px-4 py-2 rounded-xl hover:bg-white/10 transition">ไปที่หน้าร้านค้า <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></a>
+            <h1 class="text-2xl font-black italic text-red-600 uppercase tracking-tighter">Admin Control</h1>
+            <div class="flex gap-4">
+                <button onclick="switchSection('shop')" class="tab-btn active shop-tab-btn">จัดการสินค้า</button>
+                <button onclick="switchSection('user')" class="tab-btn user-tab-btn">จัดการสมาชิก</button>
+            </div>
         </div>
     </nav>
 
     <div class="container mx-auto px-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            
+        
+        <div id="shopSection" class="grid grid-cols-1 lg:grid-cols-3 gap-10">
             <div class="lg:col-span-1 space-y-6">
-                <div class="glass p-8 rounded-[30px] border-t-4 border-red-600">
-                    <h2 class="text-xl font-bold mb-6 italic"><i class="fa-solid fa-plus-circle text-red-600 mr-2"></i>เพิ่มสินค้าใหม่</h2>
-                    
+                <div class="glass p-8 rounded-[30px] border-t-4 border-red-600 sticky top-32">
+                    <h2 id="formTitle" class="text-xl font-bold mb-6 italic uppercase"><i class="fa-solid fa-cart-plus text-red-600 mr-2"></i>จัดการสินค้า</h2>
+                    <input type="hidden" id="editId">
                     <div class="space-y-4">
-                        <div>
-                            <label class="text-xs text-gray-500 ml-2 mb-1 block">ชื่อสินค้า</label>
-                            <input type="text" id="p_name" class="input-style" placeholder="เช่น ไอดีไก่ตัน">
-                        </div>
+                        <input type="text" id="p_name" class="input-style" placeholder="ชื่อสินค้า">
                         <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-xs text-gray-500 ml-2 mb-1 block">ราคา (฿)</label>
-                                <input type="number" id="p_price" class="input-style" placeholder="99">
-                            </div>
-                            <div>
-                                <label class="text-xs text-gray-500 ml-2 mb-1 block">ประเภท</label>
-                                <select id="p_type" class="input-style">
-                                    <option value="normal">สินค้าปกติ</option>
-                                    <option value="gacha">กล่องสุ่ม (Gacha)</option>
-                                </select>
-                            </div>
+                            <input type="number" id="p_price" class="input-style" placeholder="ราคา">
+                            <select id="p_type" class="input-style">
+                                <option value="normal">ปกติ</option>
+                                <option value="gacha">สุ่ม (Gacha)</option>
+                            </select>
                         </div>
-                        <div>
-                            <label class="text-xs text-gray-500 ml-2 mb-1 block">รูปภาพ (URL)</label>
-                            <input type="text" id="p_img" class="input-style" placeholder="https://...">
-                        </div>
+                        <input type="text" id="p_img" class="input-style" placeholder="รูปภาพ URL">
+                        
                         <div id="normalFields" class="space-y-4">
-                            <input type="text" id="p_user" class="input-style" placeholder="Username / ไอดี">
-                            <input type="text" id="p_pass" class="input-style" placeholder="Password / รหัส">
+                            <input type="text" id="p_user" class="input-style" placeholder="ไอดี">
+                            <input type="text" id="p_pass" class="input-style" placeholder="รหัสผ่าน">
                         </div>
                         <div id="gachaFields" class="hidden">
-                            <textarea id="p_items" class="input-style h-24" placeholder="ใส่ ID:PASS (1 บรรทัด = 1 รางวัล)&#10;user1:pass1&#10;user2:pass2"></textarea>
-                            <p class="text-[10px] text-gray-500 mt-1">* 1 บรรทัดต่อ 1 รางวัล ระบบจะแยกให้อัตโนมัติ</p>
+                            <textarea id="p_items" class="input-style h-24" placeholder="user1:pass1&#10;user2:pass2"></textarea>
                         </div>
                         
-                        <button id="btnAdd" class="w-full btn-red py-4 rounded-2xl font-bold uppercase mt-4">บันทึกลงฐานข้อมูล</button>
+                        <button id="btnAdd" class="w-full btn-red py-4 rounded-2xl font-bold uppercase mt-4">บันทึกข้อมูล</button>
+                        <button id="btnCancelEdit" class="hidden w-full bg-white/5 py-2 rounded-xl text-xs font-bold uppercase">ยกเลิกการแก้ไข</button>
                     </div>
                 </div>
             </div>
 
             <div class="lg:col-span-2 space-y-6">
-                <div class="flex gap-4 mb-2">
-                    <button onclick="switchTab('normal')" id="tabNormal" class="tab-btn active font-bold">สินค้าปกติ</button>
-                    <button onclick="switchTab('gacha')" id="tabGacha" class="tab-btn font-bold">กล่องสุ่ม</button>
+                <div class="flex gap-4">
+                    <button onclick="switchShopTab('normal')" id="tabN" class="text-sm font-bold border-b-2 border-red-600 pb-2">สินค้าปกติ</button>
+                    <button onclick="switchShopTab('gacha')" id="tabG" class="text-sm font-bold text-gray-500 pb-2">กล่องสุ่ม</button>
                 </div>
-
-                <div id="listContainer" class="glass rounded-[30px] overflow-hidden">
-                    <div class="p-6 bg-white/5 flex justify-between items-center">
-                        <h3 class="font-bold italic uppercase">จัดการรายการสินค้า</h3>
-                        <span id="itemCount" class="text-xs bg-red-600/20 text-red-500 px-3 py-1 rounded-full font-bold">0 รายการ</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-white/5 text-gray-400 text-[10px] uppercase tracking-widest">
-                                <tr>
-                                    <th class="p-5">สินค้า</th>
-                                    <th class="p-5">ราคา</th>
-                                    <th class="p-5">สต็อก/ข้อมูล</th>
-                                    <th class="p-5 text-right">จัดการ</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminGrid" class="text-sm">
-                                </tbody>
-                        </table>
-                    </div>
+                <div class="glass rounded-[30px] overflow-hidden">
+                    <table class="w-full text-left">
+                        <tbody id="adminGrid"></tbody>
+                    </table>
                 </div>
             </div>
-
         </div>
+
+        <div id="userSection" class="hidden max-w-4xl mx-auto">
+            <div class="glass p-8 rounded-[40px] mb-10">
+                <h2 class="text-2xl font-bold mb-6 italic uppercase text-red-600 text-center">Top-up System (เติมเงิน)</h2>
+                <div class="flex gap-4">
+                    <input type="email" id="targetEmail" class="input-style" placeholder="ใส่อีเมลลูกค้าที่ต้องการเติม">
+                    <input type="number" id="topupAmount" class="input-style w-32" placeholder="จำนวนเงิน">
+                    <button id="btnTopup" class="btn-red px-8 rounded-2xl font-bold uppercase whitespace-nowrap">เติมเงิน</button>
+                </div>
+                <p class="text-[10px] text-gray-500 mt-2 text-center">* ค้นหาจากอีเมลที่ลูกค้าสมัครไว้ในระบบ</p>
+            </div>
+
+            <div class="glass rounded-[30px] overflow-hidden">
+                <div class="p-6 bg-white/5 border-b border-white/5 font-bold italic">รายชื่อสมาชิกทั้งหมด</div>
+                <table class="w-full text-left">
+                    <thead class="text-xs text-gray-500 uppercase bg-white/5">
+                        <tr><th class="p-5">Email</th><th class="p-5">เงินคงเหลือ</th><th class="p-5 text-right">การจัดการ</th></tr>
+                    </thead>
+                    <tbody id="userGrid"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAfML9ajHOufn3MDLSBZlXvaKl5YOobTpE",
@@ -118,85 +116,144 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let currentTab = 'normal';
+        let shopTab = 'normal';
+        let isEditing = false;
 
-        // Toggle Gacha Fields
+        // Section Switch
+        window.switchSection = (sec) => {
+            document.getElementById('shopSection').classList.toggle('hidden', sec !== 'shop');
+            document.getElementById('userSection').classList.toggle('hidden', sec !== 'user');
+            document.querySelector('.shop-tab-btn').classList.toggle('active', sec === 'shop');
+            document.querySelector('.user-tab-btn').classList.toggle('active', sec === 'user');
+        };
+
+        // Shop Logic
         document.getElementById('p_type').onchange = (e) => {
             const isGacha = e.target.value === 'gacha';
             document.getElementById('normalFields').classList.toggle('hidden', isGacha);
             document.getElementById('gachaFields').classList.toggle('hidden', !isGacha);
         };
 
-        window.switchTab = (tab) => {
-            currentTab = tab;
-            document.getElementById('tabNormal').classList.toggle('active', tab === 'normal');
-            document.getElementById('tabGacha').classList.toggle('active', tab === 'gacha');
-            loadData();
+        window.switchShopTab = (tab) => {
+            shopTab = tab;
+            document.getElementById('tabN').classList.toggle('text-red-600', tab === 'normal');
+            document.getElementById('tabN').classList.toggle('border-b-2', tab === 'normal');
+            document.getElementById('tabG').classList.toggle('text-red-600', tab === 'gacha');
+            document.getElementById('tabG').classList.toggle('border-b-2', tab === 'gacha');
+            loadShop();
         };
 
-        // Add Data
         document.getElementById('btnAdd').onclick = async () => {
             const name = document.getElementById('p_name').value;
             const price = Number(document.getElementById('p_price').value);
             const img = document.getElementById('p_img').value;
             const type = document.getElementById('p_type').value;
+            const id = document.getElementById('editId').value;
+
+            const payload = { name, price, img };
+            if(type === 'normal') {
+                payload.id_user = document.getElementById('p_user').value;
+                payload.id_pass = document.getElementById('p_pass').value;
+            } else {
+                const lines = document.getElementById('p_items').value.split('\n');
+                payload.items = lines.filter(l => l.includes(':')).map(l => {
+                    const [u, p] = l.split(':'); return { id_user: u, id_pass: p };
+                });
+            }
 
             try {
-                if(type === 'normal') {
-                    await addDoc(collection(db, "products"), {
-                        name, price, img,
-                        id_user: document.getElementById('p_user').value,
-                        id_pass: document.getElementById('p_pass').value
-                    });
+                if(isEditing) {
+                    await updateDoc(doc(db, type === 'normal' ? "products" : "gacha", id), payload);
+                    alert('อัปเดตเรียบร้อย');
+                    cancelEdit();
                 } else {
-                    const lines = document.getElementById('p_items').value.split('\n');
-                    const items = lines.filter(l => l.includes(':')).map(l => {
-                        const [u, p] = l.split(':');
-                        return { id_user: u, id_pass: p };
-                    });
-                    await addDoc(collection(db, "gacha"), { name, price, img, items });
+                    await addDoc(collection(db, type === 'normal' ? "products" : "gacha"), payload);
+                    alert('เพิ่มสำเร็จ');
                 }
-                alert('เพิ่มข้อมูลสำเร็จ!');
-                location.reload();
-            } catch (e) { alert('เกิดข้อผิดพลาด'); }
+                resetForm();
+            } catch (e) { alert('ผิดพลาด!'); }
         };
 
-        // Delete Data
+        window.prepEdit = (id, data, type) => {
+            isEditing = true;
+            document.getElementById('editId').value = id;
+            document.getElementById('p_name').value = data.name;
+            document.getElementById('p_price').value = data.price;
+            document.getElementById('p_img').value = data.img;
+            document.getElementById('p_type').value = type;
+            document.getElementById('p_type').dispatchEvent(new Event('change'));
+            
+            if(type === 'normal') {
+                document.getElementById('p_user').value = data.id_user;
+                document.getElementById('p_pass').value = data.id_pass;
+            } else {
+                document.getElementById('p_items').value = data.items.map(i => `${i.id_user}:${i.id_pass}`).join('\n');
+            }
+            document.getElementById('formTitle').innerText = "แก้ไขสินค้า";
+            document.getElementById('btnCancelEdit').classList.remove('hidden');
+        };
+
+        function resetForm() {
+            ['p_name', 'p_price', 'p_img', 'p_user', 'p_pass', 'p_items'].forEach(id => document.getElementById(id).value = '');
+        }
+
+        function cancelEdit() {
+            isEditing = false;
+            document.getElementById('formTitle').innerText = "จัดการสินค้า";
+            document.getElementById('btnCancelEdit').classList.add('hidden');
+            resetForm();
+        }
+        document.getElementById('btnCancelEdit').onclick = cancelEdit;
+
         window.delItem = async (id) => {
-            if(!confirm('ยืนยันการลบรายการนี้?')) return;
-            const collectionName = currentTab === 'normal' ? 'products' : 'gacha';
-            await deleteDoc(doc(db, collectionName, id));
+            if(confirm('ลบรายการนี้?')) await deleteDoc(doc(db, shopTab === 'normal' ? "products" : "gacha", id));
         };
 
-        // Load Data
-        function loadData() {
-            const collectionName = currentTab === 'normal' ? 'products' : 'gacha';
-            onSnapshot(collection(db, collectionName), (snap) => {
-                document.getElementById('itemCount').innerText = `${snap.size} รายการ`;
+        function loadShop() {
+            const col = shopTab === 'normal' ? "products" : "gacha";
+            onSnapshot(collection(db, col), (snap) => {
                 document.getElementById('adminGrid').innerHTML = snap.docs.map(doc => {
                     const d = doc.data();
-                    const stockText = currentTab === 'normal' ? 
-                        `<span class="text-gray-500">${d.id_user}</span>` : 
-                        `<span class="text-green-500 font-bold">${d.items.length} ชิ้น</span>`;
-                    
-                    return `
-                        <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
-                            <td class="p-5 flex items-center gap-3">
-                                <img src="${d.img}" class="w-10 h-10 rounded-lg object-cover">
-                                <span class="font-bold">${d.name}</span>
-                            </td>
-                            <td class="p-5 text-red-500 font-bold">฿${d.price}</td>
-                            <td class="p-5">${stockText}</td>
-                            <td class="p-5 text-right">
-                                <button onclick="delItem('${doc.id}')" class="text-gray-500 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
-                            </td>
-                        </tr>
-                    `;
+                    return `<tr class="border-b border-white/5">
+                        <td class="p-5 font-bold">${d.name}</td>
+                        <td class="p-5 text-red-500">฿${d.price}</td>
+                        <td class="p-5 text-right flex justify-end gap-3 mt-4">
+                            <button onclick='prepEdit("${doc.id}", ${JSON.stringify(d)}, "${shopTab}")' class="text-blue-500"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="delItem('${doc.id}')" class="text-red-600"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>`;
                 }).join('');
             });
         }
 
-        loadData();
+        // User & Topup Logic
+        document.getElementById('btnTopup').onclick = async () => {
+            const email = document.getElementById('targetEmail').value;
+            const amount = Number(document.getElementById('topupAmount').value);
+            if(!email || !amount) return alert('กรุณาระบุข้อมูล');
+
+            const q = query(collection(db, "users"), where("email", "==", email));
+            const snap = await getDocs(q);
+            if(snap.empty) return alert('ไม่พบอีเมลนี้ในระบบ');
+
+            const userDoc = snap.docs[0];
+            await updateDoc(doc(db, "users", userDoc.id), { balance: userDoc.data().balance + amount });
+            alert('เติมเงินสำเร็จ!');
+        };
+
+        onSnapshot(collection(db, "users"), (snap) => {
+            document.getElementById('userGrid').innerHTML = snap.docs.map(doc => {
+                const u = doc.data();
+                return `<tr class="border-b border-white/5">
+                    <td class="p-5 text-xs text-gray-300">${u.email}</td>
+                    <td class="p-5 font-bold text-red-500">฿${u.balance.toLocaleString()}</td>
+                    <td class="p-5 text-right"><button onclick="document.getElementById('targetEmail').value='${u.email}'" class="text-[10px] bg-red-600 px-2 py-1 rounded">เลือกเติมเงิน</button></td>
+                </tr>`;
+            }).join('');
+        });
+
+        loadShop();
     </script>
 </body>
-</html>
+    </html>
+    
