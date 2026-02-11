@@ -12,14 +12,13 @@
         .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .input-style { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; width: 100%; outline: none; transition: 0.3s; color: white; }
         .input-style:focus { border-color: #dc2626; background: rgba(220, 38, 38, 0.05); }
-        .modal-overlay { display: none; position: fixed; inset: 0; z-index: 5000; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); align-items: center; justify-content: center; }
         .pop-up { animation: popScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popScale { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
         .welcome-bounce { animation: bounce 2s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .gacha-card { position: relative; overflow: hidden; border-top: 3px solid #dc2626; }
         .gacha-card::after { content: 'GACHA'; position: absolute; top: 10px; right: -25px; background: #dc2626; font-size: 10px; padding: 2px 30px; transform: rotate(45deg); font-weight: bold; }
-        .btn-red { background: #dc2626; transition: 0.3s; cursor: pointer; }
+        .btn-red { background: #dc2626; transition: 0.3s; cursor: pointer; color: white; }
         .btn-red:hover { background: #b91c1c; transform: translateY(-2px); }
     </style>
 </head>
@@ -38,7 +37,7 @@
             </div>
             <h2 class="text-2xl font-bold mb-2 italic uppercase">Welcome!</h2>
             <p class="text-gray-400 text-sm mb-6">ยินดีต้อนรับสู่ RipAjnne Shop แหล่งรวมไอดีและกล่องสุ่มพรีเมียม</p>
-            <button onclick="closeWelcome()" class="w-full btn-red py-3 rounded-2xl font-bold uppercase text-white">เข้าสู่ร้านค้า</button>
+            <button onclick="closeWelcome()" class="w-full btn-red py-3 rounded-2xl font-bold uppercase">เข้าสู่ร้านค้า</button>
         </div>
     </div>
 
@@ -47,7 +46,7 @@
             <h2 class="text-xl font-bold mb-4 italic uppercase text-yellow-500">Redeem Code</h2>
             <input type="text" id="redeemInput" class="input-style mb-4 text-center tracking-[3px]" placeholder="กรอกโค้ดของคุณ">
             <div class="flex gap-3">
-                <button onclick="submitRedeem()" class="flex-1 btn-red py-3 rounded-xl font-bold text-white">เติมเงิน</button>
+                <button onclick="submitRedeem()" class="flex-1 btn-red py-3 rounded-xl font-bold">เติมเงิน</button>
                 <button onclick="closeRedeem()" class="flex-1 bg-white/5 py-3 rounded-xl font-bold text-xs">ปิด</button>
             </div>
         </div>
@@ -57,14 +56,14 @@
         <div class="glass p-8 rounded-[35px] w-full max-w-[400px] text-center border-t-4 border-red-600 shadow-2xl">
             <h1 class="text-3xl font-black italic text-red-600 mb-6 uppercase">RipAjnne Shop</h1>
             <div id="loginForm" class="space-y-4">
-                <input type="email" id="userLogin" placeholder="อีเมลของคุณ" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-red-600 text-white">
-                <input type="password" id="passLogin" placeholder="รหัสผ่าน" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-red-600 text-white">
+                <input type="email" id="userLogin" placeholder="อีเมลของคุณ" class="input-style">
+                <input type="password" id="passLogin" placeholder="รหัสผ่าน" class="input-style">
                 <button id="btnLogin" class="w-full bg-red-600 py-4 rounded-2xl font-bold hover:bg-red-700 transition shadow-lg uppercase">เข้าสู่ระบบ</button>
                 <p class="text-xs text-gray-500">ยังไม่มีบัญชี? <button onclick="toggleAuth('reg')" class="text-red-500 underline">สมัครสมาชิก</button></p>
             </div>
             <div id="regForm" class="hidden space-y-4">
-                <input type="email" id="userReg" placeholder="อีเมลสำหรับสมัคร" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 text-white">
-                <input type="password" id="passReg" placeholder="ตั้งรหัสผ่าน (6 ตัวขึ้นไป)" class="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-blue-500 text-white">
+                <input type="email" id="userReg" placeholder="อีเมลสำหรับสมัคร" class="input-style">
+                <input type="password" id="passReg" placeholder="ตั้งรหัสผ่าน (6 ตัวขึ้นไป)" class="input-style">
                 <button id="btnRegister" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase">ยืนยันสมัครสมาชิก</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 underline mt-4 block mx-auto">กลับไปหน้าล็อกอิน</button>
             </div>
@@ -144,7 +143,7 @@
 
         let currentUserData = null;
 
-        // --- UI Functions ---
+        // --- Core UI Functions ---
         window.showNoti = (type, title, sub) => {
             const overlay = document.getElementById('notiOverlay');
             document.getElementById('notiIcon').innerHTML = type === 'success' ? '<i class="fa-solid fa-check text-white"></i>' : '<i class="fa-solid fa-xmark text-white"></i>';
@@ -165,26 +164,63 @@
             document.getElementById('profilePage').classList.toggle('hidden', page !== 'profile');
         };
 
-        // Welcome Popup Logic
         window.closeWelcome = () => {
             document.getElementById('welcomeModal').classList.add('hidden');
             sessionStorage.setItem('shownWelcome', 'true');
         };
 
-        // Redeem Code UI
         window.openRedeem = () => document.getElementById('redeemModal').classList.remove('hidden');
         window.closeRedeem = () => document.getElementById('redeemModal').classList.add('hidden');
 
-        // --- Auth Logic ---
+        // --- Data Loading (ทำงานทันทีไม่รอ Login) ---
+        onSnapshot(collection(db, "products"), snap => {
+            const grid = document.getElementById('productGrid');
+            if (snap.empty) {
+                grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 italic">ไม่มีสินค้าในร้านขณะนี้</div>';
+            } else {
+                grid.innerHTML = snap.docs.map(doc => {
+                    const p = doc.data();
+                    return `<div class="glass p-4 rounded-3xl border border-white/5 hover:border-red-600 transition">
+                        <img src="${p.img}" class="w-full h-40 object-cover rounded-2xl mb-4">
+                        <h4 class="font-bold mb-1">${p.name}</h4>
+                        <p class="text-red-500 font-bold mb-4 italic">฿${p.price.toLocaleString()}</p>
+                        <button onclick="buyProduct('${doc.id}', ${p.price}, '${p.name}', '${p.id_user}', '${p.id_pass}')" class="w-full bg-white text-black py-2 rounded-xl font-bold hover:bg-red-600 hover:text-white transition uppercase text-xs">ซื้อเลย</button>
+                    </div>`;
+                }).join('');
+            }
+        });
+
+        onSnapshot(collection(db, "gacha"), snap => {
+            const grid = document.getElementById('gachaGrid');
+            if (snap.empty) {
+                grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500 italic">ไม่มีกล่องสุ่มขณะนี้</div>';
+            } else {
+                grid.innerHTML = snap.docs.map(doc => {
+                    const g = doc.data();
+                    return `<div class="glass gacha-card p-4 rounded-3xl border border-white/5">
+                        <img src="${g.img}" class="w-full h-40 object-cover rounded-2xl mb-4">
+                        <h4 class="font-bold mb-1 text-red-600">${g.name}</h4>
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-xs text-gray-400 italic">฿${g.price.toLocaleString()}/ครั้ง</p>
+                            <p class="text-[10px] bg-red-600/20 text-red-500 px-2 py-1 rounded-lg">คลัง: ${g.items ? g.items.length : 0}</p>
+                        </div>
+                        <button onclick='playGacha("${doc.id}", ${g.price}, "${g.name}", ${JSON.stringify(g.items)})' class="w-full bg-red-600 py-3 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition">เริ่มสุ่ม</button>
+                    </div>`;
+                }).join('');
+            }
+        });
+
+        // --- Authentication & Shop Logic ---
         document.getElementById('btnRegister').onclick = async () => {
             const email = document.getElementById('userReg').value;
             const pass = document.getElementById('passReg').value;
+            if(pass.length < 6) return showNoti('error', 'ผิดพลาด', 'รหัสต้อง 6 ตัวขึ้นไป');
             try {
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "users", res.user.uid), { email, balance: 0, orders: [] });
                 showNoti('success', 'สำเร็จ', 'สร้างบัญชีเรียบร้อย');
                 toggleAuth('login');
-            } catch (e) { showNoti('error', 'ล้มเหลว', 'ตรวจสอบข้อมูลอีกครั้ง'); }
+            } catch (e) { showNoti('error', 'ล้มเหลว', 'อีเมลอาจซ้ำหรือผิดรูปแบบ'); }
         };
 
         document.getElementById('btnLogin').onclick = async () => {
@@ -198,10 +234,10 @@
 
         document.getElementById('btnLogout').onclick = () => signOut(auth);
 
-        // --- Shop & Gacha Logic ---
         window.buyProduct = async (id, price, name, u, p) => {
-            if (!currentUserData || currentUserData.balance < price) return showNoti('error', 'เงินไม่พอ', 'กรุณาเติมเงิน');
-            if (!confirm(`ยืนยันการซื้อ ${name} ราคา ฿${price}?`)) return;
+            if (!auth.currentUser) return showNoti('error', 'แจ้งเตือน', 'กรุณาเข้าสู่ระบบก่อนซื้อ');
+            if (currentUserData.balance < price) return showNoti('error', 'เงินไม่พอ', 'กรุณาเติมเงิน');
+            if (!confirm(`ซื้อ ${name} ราคา ฿${price}?`)) return;
             try {
                 const userRef = doc(db, "users", auth.currentUser.uid);
                 await updateDoc(userRef, {
@@ -211,71 +247,57 @@
                 await deleteDoc(doc(db, "products", id));
                 showNoti('success', 'สำเร็จ', 'ซื้อสินค้าเรียบร้อย');
                 setTimeout(() => showPage('profile'), 1500);
-            } catch (e) { showNoti('error', 'ผิดพลาด', 'ไม่สามารถซื้อได้'); }
+            } catch (e) { showNoti('error', 'ผิดพลาด', 'ไม่สามารถดำเนินการได้'); }
         };
 
         window.playGacha = async (id, price, name, items) => {
-            if (!items || items.length === 0) return showNoti('error', 'ของหมด', 'ตู้สุ่มนี้ไม่มีของเหลือแล้ว');
-            const countInput = prompt(`ต้องการสุ่ม "${name}" กี่ชิ้น? (เหลือ ${items.length})`, "1");
-            const count = parseInt(countInput);
-            if (isNaN(count) || count <= 0 || count > items.length) return showNoti('error', 'ไม่ถูกต้อง', 'จำนวนสินค้าไม่ถูกต้อง');
+            if (!auth.currentUser) return showNoti('error', 'แจ้งเตือน', 'กรุณาเข้าสู่ระบบก่อนสุ่ม');
+            if (!items || items.length === 0) return showNoti('error', 'ของหมด', 'ไม่มีสินค้าในคลัง');
+            const count = parseInt(prompt(`สุ่ม "${name}" กี่ชิ้น? (เหลือ ${items.length})`, "1"));
+            if (isNaN(count) || count <= 0 || count > items.length) return showNoti('error', 'ผิดพลาด', 'ระบุจำนวนไม่ถูกต้อง');
             
-            const totalCost = price * count;
-            if (currentUserData.balance < totalCost) return showNoti('error', 'เงินไม่พอ', `คุณต้องมี ฿${totalCost}`);
+            const total = price * count;
+            if (currentUserData.balance < total) return showNoti('error', 'เงินไม่พอ', `ต้องใช้ ฿${total}`);
             
-            if (!confirm(`ยืนยันการสุ่ม ${count} ครั้ง รวม ฿${totalCost}?`)) return;
-            
+            if (!confirm(`ยืนยันการสุ่ม ${count} ครั้ง รวม ฿${total}?`)) return;
             try {
                 let tempItems = [...items];
                 let wonPrizes = [];
                 for (let i = 0; i < count; i++) {
-                    const randomIndex = Math.floor(Math.random() * tempItems.length);
-                    const prize = tempItems.splice(randomIndex, 1)[0];
+                    const idx = Math.floor(Math.random() * tempItems.length);
+                    const prize = tempItems.splice(idx, 1)[0];
                     wonPrizes.push({ name: `Gacha: ${name}`, id_user: prize.id_user, id_pass: prize.id_pass, date: new Date().toISOString() });
                 }
                 const userRef = doc(db, "users", auth.currentUser.uid);
-                await updateDoc(userRef, { balance: currentUserData.balance - totalCost, orders: arrayUnion(...wonPrizes) });
+                await updateDoc(userRef, { balance: currentUserData.balance - total, orders: arrayUnion(...wonPrizes) });
                 if (tempItems.length > 0) await updateDoc(doc(db, "gacha", id), { items: tempItems });
                 else await deleteDoc(doc(db, "gacha", id));
-                showNoti('success', 'ยินดีด้วย!', `ได้รับของจำนวน ${count} ชิ้น`);
+                showNoti('success', 'ยินดีด้วย!', `ได้รับไอเทม ${count} ชิ้น`);
                 setTimeout(() => showPage('profile'), 1500);
             } catch (e) { showNoti('error', 'ผิดพลาด', 'การสุ่มล้มเหลว'); }
         };
 
-        // --- Redeem Code Logic ---
         window.submitRedeem = async () => {
             const code = document.getElementById('redeemInput').value.trim();
             if (!auth.currentUser) return showNoti('error', 'ผิดพลาด', 'กรุณาล็อกอินก่อน');
-            if (!code) return showNoti('error', 'ผิดพลาด', 'กรุณากรอกโค้ด');
-
-            try {
-                const q = query(collection(db, "vouchers"), where("code", "==", code));
-                const snap = await getDocs(q);
-                if (snap.empty) return showNoti('error', 'ล้มเหลว', 'โค้ดไม่ถูกต้องหรือถูกใช้ไปแล้ว');
-
-                const voucher = snap.docs[0];
-                const amount = voucher.data().amount;
-                const userRef = doc(db, "users", auth.currentUser.uid);
-
-                await updateDoc(userRef, { balance: currentUserData.balance + amount });
-                await deleteDoc(doc(db, "vouchers", voucher.id));
-
-                closeRedeem();
-                showNoti('success', 'สำเร็จ!', `เติมเงินจำนวน ฿${amount} เรียบร้อย`);
-            } catch (e) { showNoti('error', 'ผิดพลาด', 'ไม่สามารถเติมโค้ดได้'); }
+            const q = query(collection(db, "vouchers"), where("code", "==", code));
+            const snap = await getDocs(q);
+            if (snap.empty) return showNoti('error', 'ล้มเหลว', 'โค้ดไม่ถูกต้อง');
+            
+            const voucher = snap.docs[0];
+            const amount = voucher.data().amount;
+            await updateDoc(doc(db, "users", auth.currentUser.uid), { balance: currentUserData.balance + amount });
+            await deleteDoc(doc(db, "vouchers", voucher.id));
+            closeRedeem();
+            showNoti('success', 'สำเร็จ!', `เติมเงิน ฿${amount} เรียบร้อย`);
         };
 
-        // --- Database Sync & Auth Change ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('authScreen').classList.add('hidden');
                 document.getElementById('mainContent').classList.remove('hidden');
+                if (!sessionStorage.getItem('shownWelcome')) document.getElementById('welcomeModal').classList.remove('hidden');
                 
-                // Show Welcome Modal once
-                if (!sessionStorage.getItem('shownWelcome')) {
-                    document.getElementById('welcomeModal').classList.remove('hidden');
-                }
-
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if (snap.exists()) {
                         currentUserData = snap.data();
@@ -292,19 +314,6 @@
                         `).join('');
                     }
                 });
-
-                // Load Products & Gacha (same as before)
-                onSnapshot(collection(db, "products"), snap => {
-                    document.getElementById('productGrid').innerHTML = snap.docs.map(doc => {
-                        const p = doc.data();
-                        return `<div class="glass p-4 rounded-3xl border border-white/5 hover:border-red-600 transition">
-                            <img src="${p.img}" class="w-full h-40 object-cover rounded-2xl mb-4">
-                            <h4 class="font-bold mb-1">${p.name}</h4>
-                            <p class="text-red-500 font-bold mb-4 italic">฿${p.price.toLocaleString()}</p>
-                             <button onclick='playGacha("${doc.id}", ${g.price}, "${g.name}", ${JSON.stringify(g.items)})' class="w-full bg-red-600 py-3 rounded-xl font-black uppercase text-xs shadow-lg active:scale-95 transition">เริ่มสุ่ม</button>
-                        </div>`;
-                    }).join('');
-                });
             } else {
                 document.getElementById('authScreen').classList.remove('hidden');
                 document.getElementById('mainContent').classList.add('hidden');
@@ -313,4 +322,3 @@
     </script>
 </body>
 </html>
-                            
