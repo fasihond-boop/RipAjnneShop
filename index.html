@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RipAjnne Shop - Ultimate Secure System</title>
+    <title>RipAjnne Shop - Secure & Redeem System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -32,6 +32,17 @@
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-red-600"></div>
     </div>
 
+    <div id="redeemModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-black/80 backdrop-blur-sm p-4">
+        <div class="glass max-w-sm w-full p-8 rounded-[40px] border-t-4 border-yellow-500 text-center pop-up">
+            <h2 class="text-xl font-bold mb-4 italic uppercase text-yellow-500">Redeem Code</h2>
+            <input type="text" id="redeemInput" class="input-style mb-4 text-center tracking-[3px]" placeholder="กรอกโค้ดที่นี่">
+            <div class="flex gap-3">
+                <button id="btnSubmitRedeem" class="flex-1 btn-red py-3 rounded-xl font-bold text-white uppercase">เติมเงิน</button>
+                <button onclick="closeRedeem()" class="flex-1 bg-white/5 py-3 rounded-xl font-bold text-xs text-white uppercase">ปิด</button>
+            </div>
+        </div>
+    </div>
+
     <div id="gachaModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-black/80 backdrop-blur-sm p-4">
         <div class="glass max-w-sm w-full p-8 rounded-[40px] border-t-4 border-red-600 text-center pop-up">
             <h2 id="gachaTargetName" class="text-xl font-bold mb-1 italic uppercase text-white">...</h2>
@@ -52,7 +63,7 @@
             <div id="loginForm" class="space-y-4">
                 <input type="email" id="userLogin" placeholder="อีเมล" class="input-style">
                 <input type="password" id="passLogin" placeholder="รหัสผ่าน" class="input-style">
-                <button id="btnLogin" class="w-full btn-red py-4 rounded-2xl font-bold">เข้าสู่ระบบ</button>
+                <button id="btnLogin" class="w-full btn-red py-4 rounded-2xl font-bold text-white">เข้าสู่ระบบ</button>
                 <p class="text-xs text-gray-500">ยังไม่มีบัญชี? <button onclick="toggleAuth('reg')" class="text-red-500 underline">สมัครสมาชิก</button></p>
             </div>
             <div id="regForm" class="hidden space-y-4">
@@ -69,11 +80,13 @@
             <div class="container mx-auto flex justify-between items-center">
                 <h1 onclick="showPage('store')" class="text-2xl font-black italic text-red-600 cursor-pointer uppercase">RipAjnne</h1>
                 <div class="flex items-center gap-3">
+                    <button onclick="openRedeem()" class="bg-yellow-500/10 border border-yellow-500/20 px-3 py-2 rounded-2xl text-yellow-500 hover:bg-yellow-500 transition"><i class="fa-solid fa-ticket"></i></button>
+                    
                     <div class="bg-red-600/10 border border-red-600/20 px-4 py-2 rounded-2xl flex items-center gap-2">
                         <i class="fa-solid fa-wallet text-red-500 text-xs"></i>
                         <span class="text-xs font-bold">฿<span id="displayBalance">0.00</span></span>
                     </div>
-                    <button onclick="showPage('profile')" class="w-10 h-10 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-red-600 transition"><i class="fa-solid fa-user"></i></button>
+                    <button onclick="showPage('profile')" class="w-10 h-10 bg-white/5 rounded-2xl flex items-center justify-center hover:bg-red-600 transition text-white"><i class="fa-solid fa-user"></i></button>
                 </div>
             </div>
         </nav>
@@ -91,7 +104,7 @@
                     <h3 id="profileUser" class="text-xl font-bold italic uppercase text-white">...</h3>
                     <div class="flex gap-3">
                         <button onclick="showPage('store')" class="bg-white/5 px-6 py-3 rounded-2xl font-bold text-sm text-white">กลับหน้าร้าน</button>
-                        <button id="btnLogout" class="bg-red-600 text-white px-6 py-3 rounded-2xl font-bold text-sm">ออก</button>
+                        <button id="btnLogout" class="bg-red-600 text-white px-6 py-3 rounded-2xl font-bold text-sm">ออกจากระบบ</button>
                     </div>
                 </div>
                 <div class="glass rounded-[35px] overflow-hidden">
@@ -117,6 +130,7 @@
         import { getFirestore, doc, setDoc, updateDoc, arrayUnion, onSnapshot, collection, deleteDoc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // !!! สำคัญ: ตรวจสอบ Config นี้ให้ตรงกับหน้าโปรเจกต์ของคุณ !!!
         const firebaseConfig = {
             apiKey: "AIzaSyAfML9ajHOufn3MDLSBZlXvaKl5YOobTpE",
             authDomain: "ripajnne-shop.firebaseapp.com",
@@ -143,6 +157,9 @@
             document.getElementById('storePage').classList.toggle('hidden', p !== 'store');
             document.getElementById('profilePage').classList.toggle('hidden', p !== 'profile');
         };
+        window.openRedeem = () => document.getElementById('redeemModal').classList.remove('hidden');
+        window.closeRedeem = () => document.getElementById('redeemModal').classList.add('hidden');
+        
         window.showNoti = (type, title, sub) => {
             const overlay = document.getElementById('notiOverlay');
             document.getElementById('notiIcon').className = `w-24 h-24 rounded-[30px] flex items-center justify-center text-4xl mb-6 shadow-2xl ${type === 'success' ? 'bg-green-500' : 'bg-red-600'}`;
@@ -152,7 +169,37 @@
             setTimeout(() => overlay.classList.replace('flex', 'hidden'), 1800);
         };
 
-        // --- Gacha Secure System ---
+        // --- Redeem Logic ---
+        document.getElementById('btnSubmitRedeem').onclick = async () => {
+            const code = document.getElementById('redeemInput').value.trim();
+            if(!code) return showNoti('error', 'ล้มเหลว', 'กรุณากรอกโค้ด');
+            
+            setLoad(true);
+            try {
+                const q = query(collection(db, "vouchers"), where("code", "==", code));
+                const snap = await getDocs(q);
+                
+                if(snap.empty) throw new Error("โค้ดไม่ถูกต้องหรือถูกใช้ไปแล้ว");
+                
+                const voucherDoc = snap.docs[0];
+                const amount = voucherDoc.data().amount;
+                
+                await updateDoc(doc(db, "users", auth.currentUser.uid), {
+                    balance: currentUserData.balance + amount
+                });
+                
+                await deleteDoc(doc(db, "vouchers", voucherDoc.id));
+                
+                closeRedeem();
+                document.getElementById('redeemInput').value = "";
+                showNoti('success', 'สำเร็จ!', `เติมเงินเข้า ฿${amount} เรียบร้อย`);
+            } catch (e) {
+                showNoti('error', 'ผิดพลาด', e.message);
+            }
+            setLoad(false);
+        };
+
+        // --- Gacha Secure Logic ---
         window.playGacha = (id, price, name, items) => {
             currentGachaData = { id, price, name, items };
             document.getElementById('gachaTargetName').innerText = name;
@@ -180,14 +227,12 @@
             setLoad(true);
 
             try {
-                // 1. ดึงข้อมูลตู้ล่าสุดจาก Server ทันทีที่กด (Real-time check)
                 const gachaSnap = await getDoc(doc(db, "gacha", id));
                 if (!gachaSnap.exists()) throw new Error("ตู้หมดแล้ว");
                 
                 let latestItems = gachaSnap.data().items || [];
                 if (latestItems.length < count) throw new Error("ของในตู้ไม่พอสุ่ม");
 
-                // 2. เริ่มสุ่มจากข้อมูลล่าสุด
                 let wonPrizes = [];
                 for(let i=0; i<count; i++) {
                     const idx = Math.floor(Math.random() * latestItems.length);
@@ -198,7 +243,6 @@
                     });
                 }
 
-                // 3. บันทึกลง User และอัปเดตตู้
                 await updateDoc(doc(db, "users", auth.currentUser.uid), { 
                     balance: currentUserData.balance - total, 
                     orders: arrayUnion(...wonPrizes) 
@@ -218,7 +262,7 @@
             }
         };
 
-        // --- Core Authentication ---
+        // --- Core Auth & Listeners ---
         document.getElementById('btnLogin').onclick = async () => {
             const email = document.getElementById('userLogin').value;
             const pass = document.getElementById('passLogin').value;
@@ -237,7 +281,6 @@
 
         document.getElementById('btnLogout').onclick = () => signOut(auth);
 
-        // --- Observer & Loading Data ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('authScreen').classList.add('hidden');
@@ -245,8 +288,8 @@
                 onSnapshot(doc(db, "users", user.uid), (snap) => {
                     if (snap.exists()) {
                         currentUserData = snap.data();
-                        document.getElementById('displayBalance').innerText = currentUserData.balance.toLocaleString();
-                        document.getElementById('profileBalance').innerText = currentUserData.balance.toLocaleString();
+                        document.getElementById('displayBalance').innerText = (currentUserData.balance || 0).toLocaleString();
+                        document.getElementById('profileBalance').innerText = (currentUserData.balance || 0).toLocaleString(); // (ถ้ามีแสดงในหน้าโปรไฟล์)
                         document.getElementById('profileUser').innerText = currentUserData.email;
                         const orders = currentUserData.orders || [];
                         document.getElementById('orderCount').innerText = orders.length;
@@ -263,6 +306,7 @@
             }
         });
 
+        // Store Listeners
         onSnapshot(collection(db, "products"), s => {
             document.getElementById('productGrid').innerHTML = s.docs.map(d => {
                 const p = d.data();
