@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RipAjnne Shop - Ultimate System</title>
+    <title>RipAjnne Shop - Ultimate Secure System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,11 +14,10 @@
         .input-style:focus { border-color: #dc2626; background: rgba(220, 38, 38, 0.05); }
         .inventory-scroll { max-height: 500px; overflow-y: auto; }
         .btn-red { background: #dc2626; transition: 0.3s; cursor: pointer; color: white; }
-        .btn-red:hover { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4); }
+        .btn-red:hover:not(:disabled) { background: #b91c1c; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4); }
+        .btn-red:disabled { background: #555; cursor: not-allowed; opacity: 0.7; }
         .pop-up { animation: popScale 0.3s ease-out forwards; }
         @keyframes popScale { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .gacha-card { position: relative; overflow: hidden; border-top: 3px solid #dc2626; }
-        .gacha-card::after { content: 'GACHA'; position: absolute; top: 10px; right: -25px; background: #dc2626; font-size: 10px; padding: 2px 30px; transform: rotate(45deg); font-weight: bold; }
     </style>
 </head>
 <body>
@@ -29,33 +28,20 @@
         <p id="notiSub" class="text-gray-500 uppercase tracking-[0.3em] text-xs"></p>
     </div>
 
+    <div id="loadingOverlay" class="fixed inset-0 hidden items-center justify-center bg-black/80 z-[10000]">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-red-600"></div>
+    </div>
+
     <div id="gachaModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-black/80 backdrop-blur-sm p-4">
         <div class="glass max-w-sm w-full p-8 rounded-[40px] border-t-4 border-red-600 text-center pop-up">
-            <div class="w-16 h-16 bg-red-600/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <i class="fa-solid fa-dice text-2xl text-red-600"></i>
-            </div>
             <h2 id="gachaTargetName" class="text-xl font-bold mb-1 italic uppercase text-white">...</h2>
             <p id="gachaTargetPrice" class="text-sm text-gray-500 mb-6 font-bold uppercase"></p>
             <div class="space-y-4">
-                <div>
-                    <label class="text-[10px] text-gray-500 uppercase font-bold block mb-2 text-left ml-2">ระบุจำนวนที่ต้องการสุ่ม</label>
-                    <input type="number" id="gachaAmountInput" class="input-style text-center text-xl font-bold" value="1" min="1">
-                </div>
+                <input type="number" id="gachaAmountInput" class="input-style text-center text-xl font-bold" value="1" min="1">
                 <div class="flex gap-3">
-                    <button id="btnConfirmGacha" class="flex-[2] btn-red py-4 rounded-2xl font-bold uppercase">ยืนยันการสุ่ม</button>
+                    <button id="btnConfirmGacha" class="flex-[2] btn-red py-4 rounded-2xl font-bold uppercase text-white">ยืนยันการสุ่ม</button>
                     <button onclick="closeGachaModal()" class="flex-1 bg-white/5 py-4 rounded-2xl font-bold text-xs text-white uppercase">ยกเลิก</button>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="redeemModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden bg-black/80 backdrop-blur-sm p-4">
-        <div class="glass max-w-sm w-full p-8 rounded-[40px] border-t-4 border-yellow-500 text-center pop-up">
-            <h2 class="text-xl font-bold mb-4 italic uppercase text-yellow-500">Redeem Code</h2>
-            <input type="text" id="redeemInput" class="input-style mb-4 text-center tracking-[3px]" placeholder="กรอกโค้ด">
-            <div class="flex gap-3">
-                <button onclick="submitRedeem()" class="flex-1 btn-red py-3 rounded-xl font-bold">เติมเงิน</button>
-                <button onclick="closeRedeem()" class="flex-1 bg-white/5 py-3 rounded-xl font-bold text-xs text-white">ปิด</button>
             </div>
         </div>
     </div>
@@ -64,16 +50,16 @@
         <div class="glass p-8 rounded-[35px] w-full max-w-[400px] text-center border-t-4 border-red-600 shadow-2xl">
             <h1 class="text-3xl font-black italic text-red-600 mb-6 uppercase">RipAjnne Shop</h1>
             <div id="loginForm" class="space-y-4">
-                <input type="email" id="userLogin" placeholder="อีเมลของคุณ" class="input-style">
+                <input type="email" id="userLogin" placeholder="อีเมล" class="input-style">
                 <input type="password" id="passLogin" placeholder="รหัสผ่าน" class="input-style">
-                <button id="btnLogin" class="w-full bg-red-600 py-4 rounded-2xl font-bold uppercase text-white">เข้าสู่ระบบ</button>
+                <button id="btnLogin" class="w-full btn-red py-4 rounded-2xl font-bold">เข้าสู่ระบบ</button>
                 <p class="text-xs text-gray-500">ยังไม่มีบัญชี? <button onclick="toggleAuth('reg')" class="text-red-500 underline">สมัครสมาชิก</button></p>
             </div>
             <div id="regForm" class="hidden space-y-4">
                 <input type="email" id="userReg" placeholder="อีเมลสมัคร" class="input-style">
                 <input type="password" id="passReg" placeholder="รหัสผ่าน" class="input-style">
-                <button id="btnRegister" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase text-white">ยืนยันสมัคร</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 underline mt-4 block mx-auto">กลับไปหน้าล็อกอิน</button>
+                <button id="btnRegister" class="w-full bg-blue-600 py-4 rounded-2xl font-bold text-white">ยืนยันสมัคร</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 underline block mx-auto mt-2">กลับหน้าล็อกอิน</button>
             </div>
         </div>
     </div>
@@ -83,7 +69,6 @@
             <div class="container mx-auto flex justify-between items-center">
                 <h1 onclick="showPage('store')" class="text-2xl font-black italic text-red-600 cursor-pointer uppercase">RipAjnne</h1>
                 <div class="flex items-center gap-3">
-                    <button onclick="openRedeem()" class="bg-yellow-500/10 border border-yellow-500/20 px-3 py-2 rounded-2xl text-yellow-500 hover:bg-yellow-500 transition"><i class="fa-solid fa-ticket text-xs"></i></button>
                     <div class="bg-red-600/10 border border-red-600/20 px-4 py-2 rounded-2xl flex items-center gap-2">
                         <i class="fa-solid fa-wallet text-red-500 text-xs"></i>
                         <span class="text-xs font-bold">฿<span id="displayBalance">0.00</span></span>
@@ -94,45 +79,30 @@
         </nav>
 
         <div id="storePage" class="container mx-auto px-6 py-12">
-            <h2 class="text-2xl font-black italic mb-8 uppercase"><i class="fa-solid fa-dice-six text-red-600 mr-2"></i>GACHA SYSTEM</h2>
+            <h2 class="text-2xl font-black italic mb-8 uppercase text-red-600">Gacha System</h2>
             <div id="gachaGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16"></div>
-            <h2 class="text-2xl font-black italic mb-8 uppercase text-center">STORE CATALOG</h2>
+            <h2 class="text-2xl font-black italic mb-8 uppercase text-center">Store Catalog</h2>
             <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"></div>
         </div>
 
         <div id="profilePage" class="hidden container mx-auto px-6 py-12">
             <div class="max-w-5xl mx-auto space-y-6">
                 <div class="glass p-8 rounded-[40px] flex flex-col md:flex-row items-center justify-between gap-6 border-b-4 border-red-600">
-                    <div class="flex items-center gap-5">
-                        <div class="w-16 h-16 bg-red-600 rounded-3xl flex items-center justify-center text-3xl shadow-lg"><i class="fa-solid fa-user-shield"></i></div>
-                        <div>
-                            <h3 id="profileUser" class="text-xl font-bold italic uppercase text-white">USER</h3>
-                            <p class="text-xs text-gray-500 tracking-widest uppercase">Member Account</p>
-                        </div>
-                    </div>
+                    <h3 id="profileUser" class="text-xl font-bold italic uppercase text-white">...</h3>
                     <div class="flex gap-3">
-                        <button onclick="showPage('store')" class="bg-white/5 hover:bg-white/10 px-6 py-3 rounded-2xl font-bold text-sm border border-white/10 text-white transition"><i class="fa-solid fa-shop mr-2"></i> กลับหน้าร้าน</button>
-                        <button id="btnLogout" class="bg-red-600/10 text-red-500 hover:bg-red-600 hover:text-white px-6 py-3 rounded-2xl font-bold text-sm">ออกจากระบบ</button>
-                    </div>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="glass p-6 rounded-[30px] flex items-center justify-between">
-                        <div><p class="text-xs text-gray-400 font-bold mb-1">ยอดเงิน</p><p class="text-3xl font-black text-red-600 italic">฿<span id="profileBalance">0.00</span></p></div>
-                        <i class="fa-solid fa-coins text-4xl text-white/5"></i>
-                    </div>
-                    <div class="glass p-6 rounded-[30px] flex items-center justify-between">
-                        <div><p class="text-xs text-gray-400 font-bold mb-1">คลังของฉัน</p><p class="text-3xl font-black italic text-white"><span id="orderCount">0</span> ชิ้น</p></div>
-                        <i class="fa-solid fa-box-open text-4xl text-white/5"></i>
+                        <button onclick="showPage('store')" class="bg-white/5 px-6 py-3 rounded-2xl font-bold text-sm text-white">กลับหน้าร้าน</button>
+                        <button id="btnLogout" class="bg-red-600 text-white px-6 py-3 rounded-2xl font-bold text-sm">ออก</button>
                     </div>
                 </div>
                 <div class="glass rounded-[35px] overflow-hidden">
                     <div class="p-6 bg-white/5 flex justify-between items-center border-b border-white/5">
-                        <h4 class="font-bold italic uppercase text-white"><i class="fa-solid fa-warehouse mr-2 text-red-600"></i>คลังสินค้าส่วนตัว</h4>
+                        <h4 class="font-bold italic uppercase text-white">คลังส่วนตัว</h4>
+                        <span class="text-xs text-gray-400">ทั้งหมด <span id="orderCount">0</span> รายการ</span>
                     </div>
                     <div class="inventory-scroll">
                         <table class="w-full text-left">
-                            <thead class="bg-[#121214] text-[10px] text-gray-500 uppercase">
-                                <tr><th class="p-5">สินค้า / เวลา</th><th class="p-5">ชื่อผู้ใช้ : รหัสผ่าน</th></tr>
+                            <thead class="bg-black/40 text-[10px] text-gray-500 uppercase">
+                                <tr><th class="p-5">สินค้า / วันที่</th><th class="p-5">ชื่อผู้ใช้ : รหัสผ่าน</th></tr>
                             </thead>
                             <tbody id="historyArea" class="text-sm"></tbody>
                         </table>
@@ -144,18 +114,16 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc, updateDoc, arrayUnion, onSnapshot, collection, deleteDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, updateDoc, arrayUnion, onSnapshot, collection, deleteDoc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        // *** ตรวจสอบ Firebase Config ของคุณให้ถูกต้อง ***
         const firebaseConfig = {
             apiKey: "AIzaSyAfML9ajHOufn3MDLSBZlXvaKl5YOobTpE",
             authDomain: "ripajnne-shop.firebaseapp.com",
             projectId: "ripajnne-shop",
             storageBucket: "ripajnne-shop.firebasestorage.app",
             messagingSenderId: "1046234530869",
-            appId: "1:1046234530869:web:2af4b0bcc8f4a73a3e5d7c",
-            measurementId: "G-QRF25429ZE"
+            appId: "1:1046234530869:web:2af4b0bcc8f4a73a3e5d7c"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -166,80 +134,96 @@
         let currentGachaData = null;
 
         // UI Helpers
+        const setLoad = (s) => document.getElementById('loadingOverlay').classList.toggle('hidden', !s);
+        window.toggleAuth = (m) => {
+            document.getElementById('loginForm').classList.toggle('hidden', m === 'reg');
+            document.getElementById('regForm').classList.toggle('hidden', m === 'login');
+        };
+        window.showPage = (p) => {
+            document.getElementById('storePage').classList.toggle('hidden', p !== 'store');
+            document.getElementById('profilePage').classList.toggle('hidden', p !== 'profile');
+        };
         window.showNoti = (type, title, sub) => {
             const overlay = document.getElementById('notiOverlay');
-            document.getElementById('notiIcon').innerHTML = type === 'success' ? '<i class="fa-solid fa-circle-check"></i>' : '<i class="fa-solid fa-circle-xmark"></i>';
             document.getElementById('notiIcon').className = `w-24 h-24 rounded-[30px] flex items-center justify-center text-4xl mb-6 shadow-2xl ${type === 'success' ? 'bg-green-500' : 'bg-red-600'}`;
             document.getElementById('notiTitle').innerText = title;
             document.getElementById('notiSub').innerText = sub;
-            overlay.classList.remove('hidden'); overlay.classList.add('flex');
-            setTimeout(() => overlay.classList.add('hidden'), 2000);
+            overlay.classList.replace('hidden', 'flex');
+            setTimeout(() => overlay.classList.replace('flex', 'hidden'), 1800);
         };
 
-        window.showPage = (page) => {
-            document.getElementById('storePage').classList.toggle('hidden', page !== 'store');
-            document.getElementById('profilePage').classList.toggle('hidden', page !== 'profile');
-            window.scrollTo(0,0);
-        };
-
-        window.toggleAuth = (mode) => {
-            document.getElementById('loginForm').classList.toggle('hidden', mode === 'reg');
-            document.getElementById('regForm').classList.toggle('hidden', mode === 'login');
-        };
-
-        window.openRedeem = () => document.getElementById('redeemModal').classList.remove('hidden');
-        window.closeRedeem = () => document.getElementById('redeemModal').classList.add('hidden');
-
-        // --- Gacha Logic ---
+        // --- Gacha Secure System ---
         window.playGacha = (id, price, name, items) => {
-            if (!auth.currentUser) return showNoti('error', 'ล็อกอินก่อน', 'กรุณาเข้าสู่ระบบ');
-            if (!items || items.length === 0) return showNoti('error', 'ของหมด', 'ไม่มีสินค้าในตู้นี้');
             currentGachaData = { id, price, name, items };
             document.getElementById('gachaTargetName').innerText = name;
-            document.getElementById('gachaTargetPrice').innerText = `ราคาครั้งละ ฿${price}`;
-            document.getElementById('gachaAmountInput').value = 1;
+            document.getElementById('gachaTargetPrice').innerText = `฿${price} / ครั้ง`;
             document.getElementById('gachaModal').classList.remove('hidden');
         };
-
         window.closeGachaModal = () => document.getElementById('gachaModal').classList.add('hidden');
 
         document.getElementById('btnConfirmGacha').onclick = async () => {
+            const btn = document.getElementById('btnConfirmGacha');
             const count = parseInt(document.getElementById('gachaAmountInput').value);
-            const { id, price, name, items } = currentGachaData;
-            if (isNaN(count) || count <= 0 || count > items.length) return showNoti('error', 'จำนวนผิด', `สูงสุด ${items.length}`);
+            if (btn.disabled || isNaN(count) || count <= 0) return;
+
+            const { id, price, name } = currentGachaData;
             const total = price * count;
-            if (currentUserData.balance < total) return showNoti('error', 'เงินไม่พอ', `ต้องใช้ ฿${total}`);
-            
+
+            if (currentUserData.balance < total) {
+                showNoti('error', 'เงินไม่พอ', `ต้องใช้ ฿${total}`);
+                return closeGachaModal();
+            }
+
+            btn.disabled = true;
+            btn.innerText = "กำลังสุ่ม...";
             closeGachaModal();
+            setLoad(true);
+
             try {
-                let tempItems = [...items];
+                // 1. ดึงข้อมูลตู้ล่าสุดจาก Server ทันทีที่กด (Real-time check)
+                const gachaSnap = await getDoc(doc(db, "gacha", id));
+                if (!gachaSnap.exists()) throw new Error("ตู้หมดแล้ว");
+                
+                let latestItems = gachaSnap.data().items || [];
+                if (latestItems.length < count) throw new Error("ของในตู้ไม่พอสุ่ม");
+
+                // 2. เริ่มสุ่มจากข้อมูลล่าสุด
                 let wonPrizes = [];
                 for(let i=0; i<count; i++) {
-                    const idx = Math.floor(Math.random() * tempItems.length);
-                    const p = tempItems.splice(idx, 1)[0];
+                    const idx = Math.floor(Math.random() * latestItems.length);
+                    const p = latestItems.splice(idx, 1)[0];
                     wonPrizes.push({ 
-                        name: `Gacha: ${name}`, 
-                        id_user: p.id_user, 
-                        id_pass: p.id_pass, 
-                        date: new Date().toLocaleString('th-TH'),
-                        ts: Date.now() + i 
+                        name: `Gacha: ${name}`, id_user: p.id_user, id_pass: p.id_pass, 
+                        date: new Date().toLocaleString('th-TH'), ts: Date.now() + i 
                     });
                 }
-                const userRef = doc(db, "users", auth.currentUser.uid);
-                await updateDoc(userRef, { balance: currentUserData.balance - total, orders: arrayUnion(...wonPrizes) });
-                if(tempItems.length > 0) await updateDoc(doc(db, "gacha", id), { items: tempItems });
+
+                // 3. บันทึกลง User และอัปเดตตู้
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { 
+                    balance: currentUserData.balance - total, 
+                    orders: arrayUnion(...wonPrizes) 
+                });
+
+                if (latestItems.length > 0) await updateDoc(doc(db, "gacha", id), { items: latestItems });
                 else await deleteDoc(doc(db, "gacha", id));
-                showNoti('success', 'สุ่มสำเร็จ!', `รับไอเทม ${count} ชิ้น`);
-                setTimeout(() => showPage('profile'), 1500);
-            } catch (e) { showNoti('error', 'ผิดพลาด', 'สุ่มไม่สำเร็จ'); }
+
+                showNoti('success', 'สุ่มสำเร็จ!', `ได้รับไอเทม ${count} ชิ้น`);
+                setTimeout(() => showPage('profile'), 1200);
+            } catch (e) {
+                showNoti('error', 'ล้มเหลว', e.message);
+            } finally {
+                setLoad(false);
+                btn.disabled = false;
+                btn.innerText = "ยืนยันการสุ่ม";
+            }
         };
 
         // --- Core Authentication ---
         document.getElementById('btnLogin').onclick = async () => {
             const email = document.getElementById('userLogin').value;
             const pass = document.getElementById('passLogin').value;
-            try { await signInWithEmailAndPassword(auth, email, pass); showNoti('success', 'สำเร็จ', 'เข้าสู่ระบบแล้ว'); } 
-            catch (e) { showNoti('error', 'ล้มเหลว', 'ข้อมูลไม่ถูกต้อง'); }
+            try { await signInWithEmailAndPassword(auth, email, pass); } 
+            catch (e) { showNoti('error', 'ผิดพลาด', 'อีเมลหรือรหัสผ่านผิด'); }
         };
 
         document.getElementById('btnRegister').onclick = async () => {
@@ -248,46 +232,12 @@
             try {
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
                 await setDoc(doc(db, "users", res.user.uid), { email, balance: 0, orders: [] });
-                showNoti('success', 'สำเร็จ', 'สมัครเรียบร้อย');
-            } catch (e) { showNoti('error', 'ล้มเหลว', 'เกิดข้อผิดพลาด'); }
+            } catch (e) { showNoti('error', 'ผิดพลาด', 'สมัครไม่สำเร็จ'); }
         };
 
         document.getElementById('btnLogout').onclick = () => signOut(auth);
 
-        // --- Buying & Redeem ---
-        window.buyProduct = async (id, price, name, u, p) => {
-            if (!auth.currentUser) return showNoti('error', 'ล็อกอินก่อน', 'กรุณาเข้าสู่ระบบ');
-            if (currentUserData.balance < price) return showNoti('error', 'เงินไม่พอ', 'กรุณาเติมเงิน');
-            if (!confirm(`ซื้อ ${name}?`)) return;
-            try {
-                const userRef = doc(db, "users", auth.currentUser.uid);
-                await updateDoc(userRef, { 
-                    balance: currentUserData.balance - price, 
-                    orders: arrayUnion({ 
-                        name, id_user: u, id_pass: p, 
-                        date: new Date().toLocaleString('th-TH'), 
-                        ts: Date.now() 
-                    }) 
-                });
-                await deleteDoc(doc(db, "products", id));
-                showNoti('success', 'ซื้อสำเร็จ', 'เช็คสินค้าได้ในโปรไฟล์');
-                setTimeout(() => showPage('profile'), 1500);
-            } catch (e) { showNoti('error', 'ล้มเหลว', 'ของอาจจะหมดแล้ว'); }
-        };
-
-        window.submitRedeem = async () => {
-            const code = document.getElementById('redeemInput').value.trim();
-            const q = query(collection(db, "vouchers"), where("code", "==", code));
-            const snap = await getDocs(q);
-            if(snap.empty) return showNoti('error', 'ผิดพลาด', 'โค้ดไม่ถูกต้อง');
-            const v = snap.docs[0];
-            await updateDoc(doc(db, "users", auth.currentUser.uid), { balance: currentUserData.balance + v.data().amount });
-            await deleteDoc(doc(db, "vouchers", v.id));
-            closeRedeem();
-            showNoti('success', 'เติมเงินสำเร็จ', `฿${v.data().amount}`);
-        };
-
-        // --- Listeners ---
+        // --- Observer & Loading Data ---
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('authScreen').classList.add('hidden');
@@ -300,21 +250,11 @@
                         document.getElementById('profileUser').innerText = currentUserData.email;
                         const orders = currentUserData.orders || [];
                         document.getElementById('orderCount').innerText = orders.length;
-                        
-                        // แก้ไขการแสดงผลประวัติ: โชว์ ชื่อ : รหัส โดยตรง
                         document.getElementById('historyArea').innerHTML = [...orders].reverse().map(o => `
-                            <tr class="border-b border-white/5 hover:bg-white/[0.02] transition">
-             <td class="p-5">
-                                    <p class="font-bold text-red-500">${o.name}</p>
-                                    <p class="text-[10px] text-gray-400 italic">${o.date || ''}</p>
-                                </td>
-                                <td class="p-5 font-mono">
-                                    <span class="text-green-400 font-bold">${o.id_user}</span> 
-                                    <span class="mx-2 text-gray-600">:</span> 
-                                    <span class="text-blue-400 font-bold">${o.id_pass}</span>
-                                </td>
-                            </tr>
-                        `).join('') || '<tr><td colspan="2" class="p-10 text-center text-gray-500">ไม่มีข้อมูล</td></tr>';
+                            <tr class="border-b border-white/5 hover:bg-white/[0.02]">
+                                <td class="p-5"><p class="font-bold text-red-500">${o.name}</p><p class="text-[10px] text-gray-500 italic">${o.date || ''}</p></td>
+                                <td class="p-5 font-mono"><span class="text-green-400 font-bold">${o.id_user}</span> <span class="mx-1 text-gray-600">:</span> <span class="text-blue-400 font-bold">${o.id_pass}</span></td>
+                            </tr>`).join('') || '<tr><td colspan="2" class="p-10 text-center text-gray-600 italic">ไม่มีข้อมูล</td></tr>';
                     }
                 });
             } else {
@@ -326,11 +266,11 @@
         onSnapshot(collection(db, "products"), s => {
             document.getElementById('productGrid').innerHTML = s.docs.map(d => {
                 const p = d.data();
-                return `<div class="glass p-4 rounded-3xl border border-white/5 hover:border-red-600 transition">
+                return `<div class="glass p-4 rounded-3xl border border-white/10 hover:border-red-600 transition">
                     <img src="${p.img}" class="w-full h-32 object-cover rounded-2xl mb-3">
-                    <h4 class="font-bold truncate">${p.name}</h4>
+                    <h4 class="font-bold truncate text-white">${p.name}</h4>
                     <p class="text-red-500 font-bold mb-4 italic">฿${p.price}</p>
-                    <button onclick="buyProduct('${d.id}', ${p.price}, '${p.name}', '${p.id_user}', '${p.id_pass}')" class="w-full bg-white text-black py-2 rounded-xl font-bold text-xs">ซื้อทันที</button>
+                    <button onclick="buyProduct('${d.id}', ${p.price}, '${p.name}', '${p.id_user}', '${p.id_pass}')" class="w-full bg-white text-black py-2 rounded-xl font-bold text-xs uppercase">ซื้อทันที</button>
                 </div>`;
             }).join('');
         });
@@ -338,14 +278,31 @@
         onSnapshot(collection(db, "gacha"), s => {
             document.getElementById('gachaGrid').innerHTML = s.docs.map(d => {
                 const g = d.data();
-                return `<div class="glass gacha-card p-4 rounded-3xl border border-white/5">
+                return `<div class="glass p-4 rounded-3xl border border-white/10 relative overflow-hidden">
+                    <div class="absolute top-2 right-2 bg-red-600 text-[8px] font-bold px-2 py-1 rounded">GACHA</div>
                     <img src="${g.img}" class="w-full h-32 object-cover rounded-2xl mb-3">
                     <h4 class="font-bold text-red-500 truncate">${g.name}</h4>
-                    <div class="flex justify-between text-[10px] mb-3"><p>฿${g.price}</p><p>คงเหลือ: ${g.items?g.items.length:0}</p></div>
+                    <div class="flex justify-between text-[10px] my-2 text-gray-400 font-bold"><p>฿${g.price}</p><p>คงเหลือ ${g.items?g.items.length:0}</p></div>
                     <button onclick='playGacha("${d.id}", ${g.price}, "${g.name}", ${JSON.stringify(g.items)})' class="w-full btn-red py-2 rounded-xl font-bold text-xs uppercase">สุ่มสินค้า</button>
                 </div>`;
             }).join('');
         });
+
+        window.buyProduct = async (id, price, name, u, p) => {
+            if (currentUserData.balance < price) return showNoti('error', 'เงินไม่พอ', 'กรุณาเติมเงิน');
+            if (!confirm(`ซื้อ ${name}?`)) return;
+            setLoad(true);
+            try {
+                await updateDoc(doc(db, "users", auth.currentUser.uid), { 
+                    balance: currentUserData.balance - price, 
+                    orders: arrayUnion({ name, id_user: u, id_pass: p, date: new Date().toLocaleString('th-TH'), ts: Date.now() }) 
+                });
+                await deleteDoc(doc(db, "products", id));
+                showNoti('success', 'ซื้อสำเร็จ', 'เช็คได้ที่โปรไฟล์');
+                setTimeout(() => showPage('profile'), 1200);
+            } catch (e) { showNoti('error', 'ล้มเหลว', 'สินค้าอาจถูกแย่งซื้อไปแล้ว'); }
+            setLoad(false);
+        };
     </script>
 </body>
 </html>
