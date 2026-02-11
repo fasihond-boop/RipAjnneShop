@@ -25,7 +25,7 @@
             <h1 class="text-2xl font-black italic text-red-600 uppercase tracking-tighter">Admin Control</h1>
             <div class="flex gap-4">
                 <button onclick="switchSection('shop')" class="tab-btn active shop-tab-btn">จัดการสินค้า</button>
-                <button onclick="switchSection('user')" class="tab-btn user-tab-btn">จัดการสมาชิก</button>
+                <button onclick="switchSection('user')" class="tab-btn user-tab-btn">จัดการสมาชิก & โค้ด</button>
             </div>
         </div>
     </nav>
@@ -56,7 +56,7 @@
                             <textarea id="p_items" class="input-style h-24" placeholder="user1:pass1&#10;user2:pass2"></textarea>
                         </div>
                         
-                        <button id="btnAdd" class="w-full btn-red py-4 rounded-2xl font-bold uppercase mt-4">บันทึกข้อมูล</button>
+                        <button id="btnAdd" class="w-full btn-red py-4 rounded-2xl font-bold uppercase mt-4 text-white">บันทึกข้อมูล</button>
                         <button id="btnCancelEdit" class="hidden w-full bg-white/5 py-2 rounded-xl text-xs font-bold uppercase">ยกเลิกการแก้ไข</button>
                     </div>
                 </div>
@@ -75,15 +75,25 @@
             </div>
         </div>
 
-        <div id="userSection" class="hidden max-w-4xl mx-auto">
-            <div class="glass p-8 rounded-[40px] mb-10">
-                <h2 class="text-2xl font-bold mb-6 italic uppercase text-red-600 text-center">Top-up System (เติมเงิน)</h2>
+        <div id="userSection" class="hidden max-w-4xl mx-auto space-y-10">
+            <div class="glass p-8 rounded-[40px] border-t-4 border-red-600">
+                <h2 class="text-xl font-bold mb-6 italic uppercase text-red-600"><i class="fa-solid fa-coins mr-2"></i>เติมเงินโดยตรง (Direct Top-up)</h2>
                 <div class="flex gap-4">
-                    <input type="email" id="targetEmail" class="input-style" placeholder="ใส่อีเมลลูกค้าที่ต้องการเติม">
+                    <input type="email" id="targetEmail" class="input-style" placeholder="อีเมลลูกค้า">
                     <input type="number" id="topupAmount" class="input-style w-32" placeholder="จำนวนเงิน">
-                    <button id="btnTopup" class="btn-red px-8 rounded-2xl font-bold uppercase whitespace-nowrap">เติมเงิน</button>
+                    <button id="btnTopup" class="btn-red px-8 rounded-2xl font-bold uppercase whitespace-nowrap text-white">เติมเงิน</button>
                 </div>
-                <p class="text-[10px] text-gray-500 mt-2 text-center">* ค้นหาจากอีเมลที่ลูกค้าสมัครไว้ในระบบ</p>
+            </div>
+
+            <div class="glass p-8 rounded-[40px] border-t-4 border-yellow-500">
+                <h2 class="text-xl font-bold mb-6 italic uppercase text-yellow-500"><i class="fa-solid fa-ticket mr-2"></i>สร้างโค้ดเติมเงิน (Voucher Code)</h2>
+                <div class="flex gap-4">
+                    <input type="text" id="v_code" class="input-style" placeholder="ระบุโค้ด เช่น GIFT-99">
+                    <input type="number" id="v_amount" class="input-style w-32" placeholder="มูลค่าเงิน">
+                    <button id="btnCreateVoucher" class="bg-yellow-600 hover:bg-yellow-700 px-8 rounded-2xl font-bold uppercase text-white transition">สร้างโค้ด</button>
+                </div>
+                <div id="voucherList" class="mt-6 flex flex-wrap gap-2">
+                    </div>
             </div>
 
             <div class="glass rounded-[30px] overflow-hidden">
@@ -119,7 +129,7 @@
         let shopTab = 'normal';
         let isEditing = false;
 
-        // Section Switch
+        // --- Core Navigation ---
         window.switchSection = (sec) => {
             document.getElementById('shopSection').classList.toggle('hidden', sec !== 'shop');
             document.getElementById('userSection').classList.toggle('hidden', sec !== 'user');
@@ -127,7 +137,7 @@
             document.querySelector('.user-tab-btn').classList.toggle('active', sec === 'user');
         };
 
-        // Shop Logic
+        // --- Shop Management Logic ---
         document.getElementById('p_type').onchange = (e) => {
             const isGacha = e.target.value === 'gacha';
             document.getElementById('normalFields').classList.toggle('hidden', isGacha);
@@ -149,6 +159,8 @@
             const img = document.getElementById('p_img').value;
             const type = document.getElementById('p_type').value;
             const id = document.getElementById('editId').value;
+
+            if(!name || !price) return alert('กรุณากรอกข้อมูลสำคัญ');
 
             const payload = { name, price, img };
             if(type === 'normal') {
@@ -194,7 +206,10 @@
         };
 
         function resetForm() {
-            ['p_name', 'p_price', 'p_img', 'p_user', 'p_pass', 'p_items'].forEach(id => document.getElementById(id).value = '');
+            ['p_name', 'p_price', 'p_img', 'p_user', 'p_pass', 'p_items'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.value = '';
+            });
         }
 
         function cancelEdit() {
@@ -216,17 +231,17 @@
                     const d = doc.data();
                     return `<tr class="border-b border-white/5">
                         <td class="p-5 font-bold">${d.name}</td>
-                        <td class="p-5 text-red-500">฿${d.price}</td>
+                        <td class="p-5 text-red-500 font-mono">฿${d.price}</td>
                         <td class="p-5 text-right flex justify-end gap-3 mt-4">
-                            <button onclick='prepEdit("${doc.id}", ${JSON.stringify(d)}, "${shopTab}")' class="text-blue-500"><i class="fa-solid fa-pen-to-square"></i></button>
-                            <button onclick="delItem('${doc.id}')" class="text-red-600"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick='prepEdit("${doc.id}", ${JSON.stringify(d)}, "${shopTab}")' class="text-blue-500 hover:text-blue-400"><i class="fa-solid fa-pen-to-square text-lg"></i></button>
+                            <button onclick="delItem('${doc.id}')" class="text-red-600 hover:text-red-500"><i class="fa-solid fa-trash text-lg"></i></button>
                         </td>
                     </tr>`;
                 }).join('');
             });
         }
 
-        // User & Topup Logic
+        // --- User & Topup Logic ---
         document.getElementById('btnTopup').onclick = async () => {
             const email = document.getElementById('targetEmail').value;
             const amount = Number(document.getElementById('topupAmount').value);
@@ -245,13 +260,46 @@
             document.getElementById('userGrid').innerHTML = snap.docs.map(doc => {
                 const u = doc.data();
                 return `<tr class="border-b border-white/5">
-                    <td class="p-5 text-xs text-gray-300">${u.email}</td>
+                    <td class="p-5 text-xs text-gray-300 font-mono">${u.email}</td>
                     <td class="p-5 font-bold text-red-500">฿${u.balance.toLocaleString()}</td>
-                    <td class="p-5 text-right"><button onclick="document.getElementById('targetEmail').value='${u.email}'" class="text-[10px] bg-red-600 px-2 py-1 rounded">เลือกเติมเงิน</button></td>
+                    <td class="p-5 text-right">
+                        <button onclick="document.getElementById('targetEmail').value='${u.email}'" class="text-[10px] bg-red-600 px-3 py-1 rounded-full uppercase font-bold text-white hover:bg-red-700">เลือกเติม</button>
+                    </td>
                 </tr>`;
             }).join('');
         });
 
+        // --- Voucher Logic (New) ---
+        document.getElementById('btnCreateVoucher').onclick = async () => {
+            const code = document.getElementById('v_code').value.trim();
+            const amount = Number(document.getElementById('v_amount').value);
+            if(!code || !amount) return alert('ระบุโค้ดและมูลค่าเงิน');
+
+            try {
+                await addDoc(collection(db, "vouchers"), { code, amount });
+                alert(`สร้างโค้ด ${code} สำเร็จ!`);
+                document.getElementById('v_code').value = '';
+                document.getElementById('v_amount').value = '';
+            } catch (e) { alert('สร้างไม่สำเร็จ'); }
+        };
+
+        onSnapshot(collection(db, "vouchers"), (snap) => {
+            document.getElementById('voucherList').innerHTML = snap.docs.map(doc => {
+                const v = doc.data();
+                return `
+                    <div class="bg-yellow-500/10 border border-yellow-500/30 px-4 py-2 rounded-xl flex items-center gap-3">
+                        <span class="text-yellow-500 font-bold font-mono">${v.code} (฿${v.amount})</span>
+                        <button onclick="deleteVoucher('${doc.id}')" class="text-red-500 hover:text-red-400 text-xs"><i class="fa-solid fa-circle-xmark"></i></button>
+                    </div>
+                `;
+            }).join('');
+        });
+
+        window.deleteVoucher = async (id) => {
+            if(confirm('ยกเลิกโค้ดนี้?')) await deleteDoc(doc(db, "vouchers", id));
+        };
+
+        // Initialize Load
         loadShop();
     </script>
 </body>
